@@ -179,7 +179,12 @@ public class Matrix {
                 if (hostageWithNeoInCell != null) {
                     Neo neoC = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     ArrayList<Hostage> h3 = Carry(neoC, hostageWithNeoInCell, hostagesPopped);
-                    int heuristicValue = H1(neoC, hostagesPopped, turnedAgentsPopped, TB);
+                    int heuristicValue = 0;
+                    if(strat =="GR1" || strat =="AS1"){
+                        heuristicValue = H1(neoC, hostagesPopped, turnedAgentsPopped, TB);
+                    }else if (strat =="GR2" || strat =="AS2"){
+                        heuristicValue = H2(neoC, hostagesPopped, turnedAgentsPopped);
+                    }
                     Node CarryNode = new Node(neoC, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, h3, pads, pillsPopped, "carry", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ carryCost, popped.nodeLevel+1);
                     possibleStates.add(CarryNode);
                 }
@@ -193,42 +198,74 @@ public class Matrix {
                     }
                     Drop(neoM, hostageToDrop);
 
-                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    int heuristicValue = 0;
+                    if(strat =="GR1" || strat =="AS1"){
+                        heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    }
+                    else if (strat =="GR2" || strat =="AS2"){
+                        heuristicValue = H2(neoM, hostagesPopped, turnedAgentsPopped);
+                    }
                     Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "drop", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ dropCost, popped.nodeLevel+1);
                     possibleStates.add(DropNode);
                 }
                 if (canFly) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Fly(neoM, pads);
-                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    int heuristicValue = 0;
+                    if(strat =="GR1" || strat =="AS1"){
+                        heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    }else if (strat =="GR2" || strat =="AS2"){
+                        heuristicValue = H2(neoM, hostagesPopped, turnedAgentsPopped);
+                    }
                     Node FlyNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "fly", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ flyCost, popped.nodeLevel+1);
                     possibleStates.add(FlyNode);
                 }
                 if (canMoveL) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Left", m, n);
-                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    int heuristicValue = 0;
+                    if(strat =="GR1" || strat =="AS1"){
+                        heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    }else if (strat =="GR2" || strat =="AS2"){
+                        heuristicValue = H2(neoM, hostagesPopped, turnedAgentsPopped);
+                    }
                     Node LMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "left" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost, popped.nodeLevel+1);
                     possibleStates.add(LMoveNode);
                 }
                 if (canMoveR) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Right", m, n);
-                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    int heuristicValue = 0;
+                    if(strat =="GR1" || strat =="AS1"){
+                        heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    }else if (strat =="GR2" || strat =="AS2"){
+                        heuristicValue = H2(neoM, hostagesPopped, turnedAgentsPopped);
+                    }
                     Node RMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "right" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost, popped.nodeLevel+1);
                     possibleStates.add(RMoveNode);
                 }
                 if (canMoveU) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Up", m, n);
-                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    int heuristicValue = 0;
+                    if(strat =="GR1" || strat =="AS1"){
+                        heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    }else if (strat =="GR2" || strat =="AS2"){
+                        heuristicValue = H2(neoM, hostagesPopped, turnedAgentsPopped);
+                    }
                     Node UMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "up" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost, popped.nodeLevel+1);
                     possibleStates.add(UMoveNode);
                 }
                 if (canMoveD) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Down", m, n);
-                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    int heuristicValue = 0;
+                    if(strat =="GR1" || strat =="AS1"){
+                        heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    }
+                    else if (strat =="GR2" || strat =="AS2"){
+                        heuristicValue = H2(neoM, hostagesPopped, turnedAgentsPopped);
+                    }
                     Node DMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "down" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost, popped.nodeLevel+1);
                     possibleStates.add(DMoveNode);
                 }
@@ -236,7 +273,13 @@ public class Matrix {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
 
                     Take(neoM, hostagesPopped, pillsPopped);
-                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    int heuristicValue = 0;
+                    if(strat =="GR1" || strat =="AS1"){
+                        heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    }
+                    else if (strat =="GR2" || strat =="AS2"){
+                        heuristicValue = H2(neoM, hostagesPopped, turnedAgentsPopped);
+                    }
                     Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "takePill" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ takeCost, popped.nodeLevel+1);
                     possibleStates.add(DropNode);
                 }
@@ -248,14 +291,26 @@ public class Matrix {
 
                         Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                         Kill(neoM, allAgentsAround, turnedAgentsPopped, spawnedAgentsPopped);
-                        int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                        int heuristicValue = 0;
+                        if(strat =="GR1" || strat =="AS1"){
+                            heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                        }
+                        else if (strat =="GR2" || strat =="AS2"){
+                            heuristicValue = H2(neoM, hostagesPopped, turnedAgentsPopped);
+                        }
                         Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill", popped, popped.numKills + allAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ goodKillCost, popped.nodeLevel+1);
                         possibleStates.add(KillNode);
                     }
                     if (spawnedAgentsAround.size() != 0 && turnedAgentsAround.size() == 0) { // (b)
                         Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                         Kill(neoM, spawnedAgentsAround,  turnedAgentsPopped, spawnedAgentsPopped);
-                        int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                        int heuristicValue = 0;
+                        if(strat =="GR1" || strat =="AS1"){
+                            heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                        }
+                        else if (strat =="GR2" || strat =="AS2"){
+                            heuristicValue = H2(neoM, hostagesPopped, turnedAgentsPopped);
+                        }
                         Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill" , popped, popped.numKills + spawnedAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ badKillCost, popped.nodeLevel+1);
                         possibleStates.add(KillNode);
                     }
@@ -568,6 +623,16 @@ public class Matrix {
             sumDistances+= i;
         }
         return tbdist + sumDistances;
+    }
+    public static int H2(Neo neo, ArrayList<Hostage> hostages,ArrayList<Agent> turnedAgents){
+        int counter = 0;
+        for (Hostage h: hostages){
+            counter++;
+        }
+        for(Agent a : turnedAgents){
+            counter++;
+        }
+        return counter;
     }
     //Actions
     public static void Move(Neo neo, String direction, int m , int n){

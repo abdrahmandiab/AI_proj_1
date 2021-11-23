@@ -31,6 +31,13 @@ public class Matrix {
         HashSet <String> NodesTable= new HashSet<String>();
         boolean inTable = false;
         Deque<Node> actionQueue = new ArrayDeque<Node>(); //Double ended queue
+        Comparator<Node> UCcomparator = new UCComparator();
+        Comparator<Node> GRcomparator = new GRComparator();
+        Comparator<Node> AScomparator = new ASComparator();
+
+        PriorityQueue<Node> UCActionQueue = new PriorityQueue<Node>(100000,UCcomparator);
+        PriorityQueue<Node> AStarActionQueue = new PriorityQueue<Node>(100000,GRcomparator);
+        PriorityQueue<Node> GreedyActionQueue = new PriorityQueue<Node>(100000,AScomparator);
         // ^^
         boolean isSolved = false;
         String [] arr = grid.split(";");
@@ -89,7 +96,18 @@ public class Matrix {
             // Pop & do Goal Test.
             inTable = false;
             possibleStates = new ArrayList<Node>();
-            Node popped = actionQueue.remove();
+            Node popped = null;
+            if(strat == "DF" || strat =="BF" || strat =="IDS"){
+                popped = actionQueue.remove();
+            }else if(strat == "UC"){
+                popped = UCActionQueue.remove();
+            }else if(strat == "GR1" || strat == "GR2"){
+                popped = GreedyActionQueue.remove();
+            }
+            else{
+                popped = AStarActionQueue.remove();
+            }
+
             if (NodesTable.contains(popped.toString2())) {
                 inTable = true;
             }
@@ -262,16 +280,27 @@ public class Matrix {
                         }
                         ;
                         break;
-                    case "IDS":
+                    case "ID":
                         ;
                         break;
-                    case "UCS":
+                    case "UC":
+                        for(Node state: possibleStates){
+                            UCActionQueue.add(state);
+                        }
+                        break;
+                    case "GR1":;
+                    case "GR2":
+                        for(Node state: possibleStates){
+                            GreedyActionQueue.add(state);
+                        }
                         ;
                         break;
-                    case "Greedy":
-                        ;
-                        break;
-                    case "A*":
+
+                    case "AS1":;
+                    case "AS2":
+                        for(Node state: possibleStates){
+                            AStarActionQueue.add(state);
+                        }
                         ;
                         break;
                     default:
@@ -636,4 +665,55 @@ public class Matrix {
         System.out.println(solution);
     }
 
+}
+
+
+
+class UCComparator implements Comparator<Node> {
+    @Override
+    public int compare(Node x, Node y) {
+        // Assume neither string is null. Real code should
+        // probably be more robust
+        // You could also just return x.length() - y.length(),
+        // which would be more efficient.
+        if (x.costSoFar < y.costSoFar) {
+            return -1;
+        }
+        if (x.costSoFar > y.costSoFar) {
+            return 1;
+        }
+        return 0;
+    }
+}
+class GRComparator implements Comparator<Node> {
+    @Override
+    public int compare(Node x, Node y) {
+        // Assume neither string is null. Real code should
+        // probably be more robust
+        // You could also just return x.length() - y.length(),
+        // which would be more efficient.
+        if (x.heuristicCost < y.heuristicCost) {
+            return -1;
+        }
+        if (x.heuristicCost > y.heuristicCost) {
+            return 1;
+        }
+        return 0;
+    }
+}
+class ASComparator implements Comparator<Node> {
+    @Override
+    public int compare(Node x, Node y) {
+        // Assume neither string is null. Real code should
+        // probably be more robust
+        // You could also just return x.length() - y.length(),
+        // which would be more efficient.
+        if (x.costSoFar+x.heuristicCost < y.costSoFar + y.heuristicCost) {
+            return -1;
+        }
+        if (x.costSoFar+x.heuristicCost > y.costSoFar+ y.heuristicCost) {
+            return 1;
+        }
+        return 0;
+    }
 }

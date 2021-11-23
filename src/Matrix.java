@@ -190,13 +190,13 @@ public class Matrix {
                 }
                 if (canDrop) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
-                    Hostage hostageToDrop = neoM.hostagesCarried.get(0);
-                    for (Hostage h : neoM.hostagesCarried) {
-                        if (h.hp < hostageToDrop.hp) {
-                            hostageToDrop = h;
-                        }
-                    }
-                    Drop(neoM, hostageToDrop);
+                   // Hostage hostageToDrop = neoM.hostagesCarried.get(0);
+//                    for (Hostage h : neoM.hostagesCarried) {
+//                        if (h.hp < hostageToDrop.hp) {
+//                            hostageToDrop = h;
+//                        }
+//                    }
+                    Drop(neoM);
 
                     int heuristicValue = 0;
                     if(strat =="GR1" || strat =="AS1"){
@@ -572,57 +572,58 @@ public class Matrix {
 
     //FIXME make a combined array of turnedAgents and hostages then find shortest pathing across them.
     public static int H1(Neo neo, ArrayList<Hostage> hostages, ArrayList<Agent> turnedAgents, Tuple tb){
-        int dist = 0;
-        int minSoFar = 99999;
-        ArrayList<Integer> distances= new ArrayList<Integer>();
-        ArrayList<Hostage> hostagesCopy = (ArrayList<Hostage>) hostages.clone();
-        Hostage ph = null;
-
-        for(Hostage h : hostages){
-            dist = cityBlockDist(neo.location, h.location);
-            if(dist< minSoFar){
-                minSoFar =  dist;
-                ph = h;
-            }
-        }
-        hostagesCopy.remove(ph);
-        distances.add(minSoFar);
-        Hostage ph2 = null;
-        while(distances.size()< hostages.size()){
-            minSoFar = 999999;
-            for(Hostage h : hostagesCopy){
-                dist = cityBlockDist(ph.location, h.location);
-                if(dist< minSoFar){
-                    minSoFar =  dist;
-                    ph2 = h;
-                }
-            }
-            distances.add(minSoFar);
-            hostagesCopy.remove(ph2);
-            ph = ph2;
-        }
-        Agent agento = null;
-        Agent phAgent = null;
-        ArrayList<Agent> agentsCopy = (ArrayList<Agent>) turnedAgents.clone();
-        while(distances.size()< hostages.size()+turnedAgents.size()){
-            minSoFar = 999999;
-            for(Agent a : agentsCopy){
-                dist = cityBlockDist(phAgent.location, a.location);
-                if(dist< minSoFar){
-                    minSoFar =  dist;
-                    agento = a;
-                }
-            }
-            distances.add(minSoFar);
-            agentsCopy.remove(agento);
-            phAgent = agento;
-        }
-        int tbdist = cityBlockDist(neo.location, tb);
-        int sumDistances = 0;
-        for(int i : distances){
-            sumDistances+= i;
-        }
-        return tbdist + sumDistances;
+    return 0;
+//        int dist = 0;
+//        int minSoFar = 99999;
+//        ArrayList<Integer> distances= new ArrayList<Integer>();
+//        ArrayList<Hostage> hostagesCopy = (ArrayList<Hostage>) hostages.clone();
+//        Hostage ph = null;
+//
+//        for(Hostage h : hostages){
+//            dist = cityBlockDist(neo.location, h.location);
+//            if(dist< minSoFar){
+//                minSoFar =  dist;
+//                ph = h;
+//            }
+//        }
+//        hostagesCopy.remove(ph);
+//        distances.add(minSoFar);
+//        Hostage ph2 = null;
+//        while(distances.size()< hostages.size()){
+//            minSoFar = 999999;
+//            for(Hostage h : hostagesCopy){
+//                dist = cityBlockDist(ph.location, h.location);
+//                if(dist< minSoFar){
+//                    minSoFar =  dist;
+//                    ph2 = h;
+//                }
+//            }
+//            distances.add(minSoFar);
+//            hostagesCopy.remove(ph2);
+//            ph = ph2;
+//        }
+//        Agent agento = null;
+//        Agent phAgent = null;
+//        ArrayList<Agent> agentsCopy = (ArrayList<Agent>) turnedAgents.clone();
+//        while(distances.size()< hostages.size()+turnedAgents.size()){
+//            minSoFar = 999999;
+//            for(Agent a : agentsCopy){
+//                dist = cityBlockDist(phAgent.location, a.location);
+//                if(dist< minSoFar){
+//                    minSoFar =  dist;
+//                    agento = a;
+//                }
+//            }
+//            distances.add(minSoFar);
+//            agentsCopy.remove(agento);
+//            phAgent = agento;
+//        }
+//        int tbdist = cityBlockDist(neo.location, tb);
+//        int sumDistances = 0;
+//        for(int i : distances){
+//            sumDistances+= i;
+//        }
+//        return tbdist + sumDistances;
     }
     public static int H2(Neo neo, ArrayList<Hostage> hostages,ArrayList<Agent> turnedAgents){
         int counter = 0;
@@ -660,9 +661,9 @@ public class Matrix {
             spawnedAgents.remove(a);
         }
     }
-    public static void Drop(Neo neo, Hostage hostage){
-        neo.hostagesCarried.remove(hostage);
-        neo.currentlyCarrying-=1;
+    public static void Drop(Neo neo){
+        neo.hostagesCarried.clear();
+        neo.currentlyCarrying=0;
         //hostSaved +=1;
     }
     public static void Fly(Neo neo, Tuple[][] pads){

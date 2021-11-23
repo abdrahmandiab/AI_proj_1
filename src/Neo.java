@@ -9,8 +9,9 @@ public class Neo {
     ArrayList<Hostage> hostagesCarried ;
     //[1,2,3] if 2 dies,
 
-    public Neo(int maxCarry, Tuple location ,ArrayList<Hostage> hostagesCarried, int currentlyCarrying){
+    public Neo(int maxCarry, int hp, Tuple location ,ArrayList<Hostage> hostagesCarried, int currentlyCarrying){
         this.maxCarry = maxCarry;
+        this.hp = hp;
         this.location = location;
         this.hostagesCarried = new ArrayList<Hostage>();
         for(Hostage h: hostagesCarried){

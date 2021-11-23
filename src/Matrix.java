@@ -150,13 +150,13 @@ public class Matrix {
 
                 //Carry
                 if (hostageWithNeoInCell != null) {
-                    Neo neoC = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                    Neo neoC = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     ArrayList<Hostage> h3 = Carry(neoC, hostageWithNeoInCell, hostagesPopped);
                     Node CarryNode = new Node(neoC, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, h3, pads, pillsPopped, "carry", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
                     possibleStates.add(CarryNode);
                 }
                 if (canDrop) {
-                    Neo neoM = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                    Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Hostage hostageToDrop = neoM.hostagesCarried.get(0);
                     for (Hostage h : neoM.hostagesCarried) {
                         if (h.hp < hostageToDrop.hp) {
@@ -168,37 +168,37 @@ public class Matrix {
                     possibleStates.add(DropNode);
                 }
                 if (canFly) {
-                    Neo neoM = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                    Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Fly(neoM, pads);
                     Node FlyNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "fly", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
                     possibleStates.add(FlyNode);
                 }
                 if (canMoveL) {
-                    Neo neoM = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                    Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Left", m, n);
                     Node LMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "left" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
                     possibleStates.add(LMoveNode);
                 }
                 if (canMoveR) {
-                    Neo neoM = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                    Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Right", m, n);
                     Node RMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "right" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
                     possibleStates.add(RMoveNode);
                 }
                 if (canMoveU) {
-                    Neo neoM = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                    Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Up", m, n);
                     Node UMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "up" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
                     possibleStates.add(UMoveNode);
                 }
                 if (canMoveD) {
-                    Neo neoM = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                    Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Down", m, n);
                     Node DMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "down" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
                     possibleStates.add(DMoveNode);
                 }
                 if (canTake) {
-                    Neo neoM = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                    Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
 
                     Take(neoM, hostagesPopped, pillsPopped);
                     Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "takePill" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
@@ -210,13 +210,13 @@ public class Matrix {
                         allAgentsAround.addAll(turnedAgentsAround);
                         allAgentsAround.addAll(spawnedAgentsAround);
 
-                        Neo neoM = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                        Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                         Kill(neoM, allAgentsAround, turnedAgentsPopped, spawnedAgentsPopped);
                         Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill", popped, popped.numKills + 1, popped.numDeaths + numDeathsThisTurn);
                         possibleStates.add(KillNode);
                     }
                     if (spawnedAgentsAround.size() != 0 && turnedAgentsAround.size() == 0) { // (b)
-                        Neo neoM = new Neo(neoPopped.maxCarry, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
+                        Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                         Kill(neoM, spawnedAgentsAround,  turnedAgentsPopped, spawnedAgentsPopped);
                         Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill" , popped, popped.numKills + 1, popped.numDeaths + numDeathsThisTurn);
                         possibleStates.add(KillNode);
@@ -386,12 +386,12 @@ public class Matrix {
         int maxCarry = Integer.parseInt(maxCarry1);
         Tuple location = new Tuple(xLoc, yLoc);
 
-        Neo neo = new Neo(maxCarry, location, new ArrayList<Hostage>(), 0);
+        Neo neo = new Neo(maxCarry,100, location, new ArrayList<Hostage>(), 0);
         return neo;
     }
     public static Tuple parseTB(String str){
         String [] str2 = str.split(",");
-        int x= Integer.parseInt(str2[0]);
+        int x = Integer.parseInt(str2[0]);
         int y = Integer.parseInt(str2[1]);
         return new Tuple(x,y);
     }

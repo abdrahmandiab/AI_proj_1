@@ -1,9 +1,7 @@
 import java.util.*;
 
-//TODO
-// Fix pad making
-// Fix carry capacity check
-
+//TODO heuristic function number 1 (city block distance, with infinite maxCarry)
+// takes in the hostages, wl TB, w Neo, wl turnedAgents
 
 public class Matrix {
     public static int nodesExpanded = 0;
@@ -46,7 +44,7 @@ public class Matrix {
         ArrayList<Tuple> pills = parsePills(arr[5]);
         Tuple[][] pads = parsePads(arr[6]); // pads[0][1] is a Tuple value with the coordinates of the second pad from the first pair
         ArrayList<Hostage> hostages = parseHostages(arr[7]);
-        Node initState = new Node(neo, m, n,TB,spawnedAgents,new ArrayList<Agent>(), hostages, pads, pills, "init", null, 0 ,0);
+        Node initState = new Node(neo, m, n,TB,spawnedAgents,new ArrayList<Agent>(), hostages, pads, pills, "init", null, 0 ,0,1000,0);
 
         actionQueue.add(initState);
         boolean canMoveL = false;
@@ -122,6 +120,17 @@ public class Matrix {
                 //Apply passive stuff
                 int numDeathsThisTurn = applyPoisonToHostages(neo, hostagesPopped, turnedAgentsPopped);
 
+
+                //LOW PRIORITY
+                int badKillCost = 100;
+                //MEDIUM PRIORITY
+                int moveCost = 5;
+                int flyCost = 3;
+                int takeCost = 3;
+                //HIGH PRIORITY
+                int dropCost = 1;
+                int carryCost = 1;
+                int goodKillCost =2;
                 // Check which moves are possible.
                 canFly = checkFly(neoPopped, pads);
                 hostageWithNeoInCell = checkCarry(neoPopped, hostagesPopped);
@@ -152,7 +161,8 @@ public class Matrix {
                 if (hostageWithNeoInCell != null) {
                     Neo neoC = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     ArrayList<Hostage> h3 = Carry(neoC, hostageWithNeoInCell, hostagesPopped);
-                    Node CarryNode = new Node(neoC, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, h3, pads, pillsPopped, "carry", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
+                    int heuristicValue = H1(neoC, hostagesPopped, turnedAgentsPopped, TB);
+                    Node CarryNode = new Node(neoC, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, h3, pads, pillsPopped, "carry", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ carryCost);
                     possibleStates.add(CarryNode);
                 }
                 if (canDrop) {
@@ -164,44 +174,52 @@ public class Matrix {
                         }
                     }
                     Drop(neoM, hostageToDrop);
-                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "drop", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
+
+                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "drop", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ dropCost);
                     possibleStates.add(DropNode);
                 }
                 if (canFly) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Fly(neoM, pads);
-                    Node FlyNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "fly", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
+                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    Node FlyNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "fly", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ flyCost);
                     possibleStates.add(FlyNode);
                 }
                 if (canMoveL) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Left", m, n);
-                    Node LMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "left" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
+                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    Node LMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "left" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost);
                     possibleStates.add(LMoveNode);
                 }
                 if (canMoveR) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Right", m, n);
-                    Node RMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "right" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
+                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    Node RMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "right" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost);
                     possibleStates.add(RMoveNode);
                 }
                 if (canMoveU) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Up", m, n);
-                    Node UMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "up" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
+                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    Node UMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "up" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost);
                     possibleStates.add(UMoveNode);
                 }
                 if (canMoveD) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                     Move(neoM, "Down", m, n);
-                    Node DMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "down" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
+                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    Node DMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "down" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost);
                     possibleStates.add(DMoveNode);
                 }
                 if (canTake) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
 
                     Take(neoM, hostagesPopped, pillsPopped);
-                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "takePill" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn);
+                    int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "takePill" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ takeCost);
                     possibleStates.add(DropNode);
                 }
                 if (neoPopped.hp > 20) {
@@ -212,13 +230,15 @@ public class Matrix {
 
                         Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                         Kill(neoM, allAgentsAround, turnedAgentsPopped, spawnedAgentsPopped);
-                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill", popped, popped.numKills + 1, popped.numDeaths + numDeathsThisTurn);
+                        int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill", popped, popped.numKills + allAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ goodKillCost);
                         possibleStates.add(KillNode);
                     }
                     if (spawnedAgentsAround.size() != 0 && turnedAgentsAround.size() == 0) { // (b)
                         Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                         Kill(neoM, spawnedAgentsAround,  turnedAgentsPopped, spawnedAgentsPopped);
-                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill" , popped, popped.numKills + 1, popped.numDeaths + numDeathsThisTurn);
+                        int heuristicValue = H1(neoM, hostagesPopped, turnedAgentsPopped, TB);
+                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill" , popped, popped.numKills + spawnedAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ badKillCost);
                         possibleStates.add(KillNode);
                     }
                 }
@@ -413,9 +433,11 @@ public class Matrix {
 
         return pills;
     }
-    public static Tuple[][] parsePads(String str){
+    //FIXME pads are duplicated.
+    public static Tuple[][] parsePads(String str){ //2D array of pads
         String [] str2 = str.split(",");
-        Tuple [][] pads = new Tuple[str2.length/4][2];
+        Tuple [][] pads = new Tuple[str2.length/4][2]; // 1,2,3,4 , 3,4,1,2
+                                                        // 1,2,3,4 [[1,2][3,4]]
         for (int i=0; i<str2.length;i+=4){
             pads[i/4][0] = new Tuple(Integer.parseInt(str2[i]),Integer.parseInt(str2[i+1]));
             pads[i/4][1] = new Tuple(Integer.parseInt(str2[i+2]),Integer.parseInt(str2[i+3]));
@@ -455,7 +477,67 @@ public class Matrix {
         }
         return numDeaths;
     }
+    // Heuristic functions & helpers
+    public static int cityBlockDist(Tuple t1, Tuple t2){
+        int dist = 0;
+        dist += Math.abs(((int)t1.x-(int)t2.x));
+        dist += Math.abs(((int)t1.y-(int)t2.y));
 
+        return dist;
+    }
+    public static int H1(Neo neo, ArrayList<Hostage> hostages, ArrayList<Agent> turnedAgents, Tuple tb){
+        int dist = 0;
+        int minSoFar = 99999;
+        ArrayList<Integer> distances= new ArrayList<Integer>();
+        ArrayList<Hostage> hostagesCopy = (ArrayList<Hostage>) hostages.clone();
+        Hostage ph = null;
+
+        for(Hostage h : hostages){
+            dist = cityBlockDist(neo.location, h.location);
+            if(dist< minSoFar){
+                minSoFar =  dist;
+                ph = h;
+            }
+        }
+        hostagesCopy.remove(ph);
+        distances.add(minSoFar);
+        Hostage ph2 = null;
+        while(distances.size()< hostages.size()){
+            minSoFar = 999999;
+            for(Hostage h : hostagesCopy){
+                dist = cityBlockDist(ph.location, h.location);
+                if(dist< minSoFar){
+                    minSoFar =  dist;
+                    ph2 = h;
+                }
+            }
+            distances.add(minSoFar);
+            hostagesCopy.remove(ph2);
+            ph = ph2;
+        }
+        Agent agento = null;
+        Agent phAgent = null;
+        ArrayList<Agent> agentsCopy = (ArrayList<Agent>) turnedAgents.clone();
+        while(distances.size()< hostages.size()+turnedAgents.size()){
+            minSoFar = 999999;
+            for(Agent a : agentsCopy){
+                dist = cityBlockDist(phAgent.location, a.location);
+                if(dist< minSoFar){
+                    minSoFar =  dist;
+                    agento = a;
+                }
+            }
+            distances.add(minSoFar);
+            agentsCopy.remove(agento);
+            phAgent = agento;
+        }
+        int tbdist = cityBlockDist(neo.location, tb);
+        int sumDistances = 0;
+        for(int i : distances){
+            sumDistances+= i;
+        }
+        return tbdist + sumDistances;
+    }
     //Actions
     public static void Move(Neo neo, String direction, int m , int n){
         switch(direction){
@@ -494,10 +576,10 @@ public class Matrix {
 
                 break;
             }
-            if (((int)pads[i][1].x == (int) neo.location.x && (int)pads[i][1].y == (int) neo.location.y) ){
-                neo.location = new Tuple(pads[i][0].x, pads[i][0].y);
-                break;
-            }
+//            if (((int)pads[i][1].x == (int) neo.location.x && (int)pads[i][1].y == (int) neo.location.y) ){
+//                neo.location = new Tuple(pads[i][0].x, pads[i][0].y);
+//                break;
+//            }
         }
     }
     public static ArrayList<Hostage> Carry(Neo neoJ, Hostage hostage, ArrayList<Hostage> hostages){

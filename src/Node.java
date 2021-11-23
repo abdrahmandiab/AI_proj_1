@@ -14,10 +14,12 @@ public class Node {
     public String thisMove;
     public int numKills;
     public int numDeaths;
+    public int heuristicCost;
+    public int costSoFar;
 
     //Each node represents a state.
     public Node(Neo neo, int m, int n, Tuple TB, ArrayList<Agent> spawnedAgents, ArrayList<Agent> turnedAgents, ArrayList<Hostage> hostages
-    , Tuple[][] pads, ArrayList<Tuple> pills, String thisMove, Node parent, int numKills, int numDeaths){
+    , Tuple[][] pads, ArrayList<Tuple> pills, String thisMove, Node parent, int numKills, int numDeaths , int heuristicCost, int costSoFar){
         //init state
 //        this.neo = new Neo(neo.maxCarry, new Tuple((int)neo.location.x, (int) neo.location.y));
 //        this.neo.hostagesCarried = (ArrayList<Hostage>) neo.hostagesCarried.clone();
@@ -42,6 +44,8 @@ public class Node {
         this.parent = parent;
         this.numDeaths = numDeaths;
         this.numKills = numKills;
+        this.heuristicCost = heuristicCost;
+        this.costSoFar = costSoFar;
     }
 
 

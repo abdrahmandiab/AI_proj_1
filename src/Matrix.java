@@ -13,7 +13,7 @@ public class Matrix {
                 "0,1,1,1,2,1,3,1,3,3,3,4;" +    // 4 Agents (x,y) pairs
                 "1,0,2,4;" +                    // 5 pill1.x,pill1.y
                 "0,3,4,3,4,3,0,3;" +            // 6 pad1.x,pad1.y,pad2.x,pad2.y
-                "0,0,30,3,0,80,4,4,80";         // 7 Hostage.x,Hostage.y,Hostage.damage ...
+                "2,0,78";         // 7 Hostage.x,Hostage.y,Hostage.damage ...
 
         //EASY MODE
 //        return "5,5;" +                         // 0 M,N
@@ -119,7 +119,7 @@ public class Matrix {
 //                if (nodesExpanded % 1000 == 0) {
 //                    System.out.println("expanded node #" + nodesExpanded +" actionQueue: "+ actionQueue.size() + " hashTableSize: "+ NodesTable.size());
 //                }
-                isSolved = goalTest(popped.hostages, popped.turnedAgents, popped.neo);
+                isSolved = goalTest(popped.hostages, popped.turnedAgents, popped.neo,popped.TB);
                 //System.out.println("Solved: " + isSolved + popped.hostages + popped.turnedAgents + popped.neo.hostagesCarried + ", action: " + popped.thisMove + ", neo-location: " + popped.neo.location + " TB: (" + TB.x + "," + TB.y + ")");
                 if (isSolved) {
                     return makeStringOfMoves(popped);
@@ -134,10 +134,13 @@ public class Matrix {
                 ArrayList<Agent> spawnedAgentsPopped = popped.spawnedAgents;
                 ArrayList<Agent> turnedAgentsPopped = popped.turnedAgents;
                 ArrayList<Tuple> pillsPopped = popped.pills;
-
                 //Apply passive stuff
-                int numDeathsThisTurn = applyPoisonToHostages(neo, hostagesPopped, turnedAgentsPopped);
-
+                int numDeathsThisTurn = 0;
+                if(popped!=initState) {
+                    numDeathsThisTurn = applyPoisonToHostages(neoPopped, hostagesPopped, turnedAgentsPopped);
+                }else{
+                    numDeathsThisTurn = 0;
+                }
 
                 //LOW PRIORITY
                 int badKillCost = 100;
@@ -367,8 +370,8 @@ public class Matrix {
     }
 
     //Checks
-    public static boolean goalTest(ArrayList<Hostage> hostages, ArrayList<Agent> turnedAgents, Neo neo){
-        return (hostages.isEmpty() && neo.hostagesCarried.isEmpty()&& turnedAgents.isEmpty());
+    public static boolean goalTest(ArrayList<Hostage> hostages, ArrayList<Agent> turnedAgents, Neo neo, Tuple TB){
+        return (hostages.isEmpty() && neo.hostagesCarried.isEmpty()&& turnedAgents.isEmpty() && checkTB(neo,TB));
     }
     public static Hostage checkCarry(Neo neo, ArrayList<Hostage> hostages){
         for (Hostage h: hostages){
@@ -544,9 +547,11 @@ public class Matrix {
         int numDeaths = 0;
         for (Hostage h: neo.hostagesCarried){
             //if hostage being carried no need to make a new agent, just leave it carried on neo.
-            boolean alive = h.poisonTrigger();
-            if (!alive){
-                numDeaths +=1;
+            if(h.alive){
+                boolean alive = h.poisonTrigger();
+                if (!alive){
+                    numDeaths +=1;
+                }
             }
         }
         ArrayList<Hostage> hostages2 = (ArrayList<Hostage>)hostages.clone();
@@ -683,6 +688,7 @@ public class Matrix {
 
         if (neoJ.currentlyCarrying<neoJ.maxCarry) {
             hostage.wasCarried = true;
+            hostage.location = neoJ.location;
             neoJ.hostagesCarried.add(hostage);
 
             neoJ.currentlyCarrying += 1;
@@ -726,7 +732,7 @@ public class Matrix {
 
     public static void main(String args[]){
         String grid = genGrid();
-        String solution = solve(grid, "DF", true);
+        String solution = solve(grid, "BF", true);
         //System.out.println("hostages saved: "+ hostSaved);
         System.out.println(solution);
     }

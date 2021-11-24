@@ -1,5 +1,6 @@
+package code;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Neo {
     int hp = 100;
@@ -32,7 +33,7 @@ public class Neo {
 
     @Override
     public String toString() {
-        return "Neo{" +
+        return "code.Neo{" +
                 "hp=" + hp +
                 ", location=" + location +
                 ", maxCarry=" + maxCarry +

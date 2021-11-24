@@ -1,3 +1,5 @@
+package code;
+
 import java.util.Arrays;
 import java.util.ArrayList;
 public class Node {
@@ -22,8 +24,8 @@ public class Node {
     public Node(Neo neo, int m, int n, Tuple TB, ArrayList<Agent> spawnedAgents, ArrayList<Agent> turnedAgents, ArrayList<Hostage> hostages
     , Tuple[][] pads, ArrayList<Tuple> pills, String thisMove, Node parent, int numKills, int numDeaths , int heuristicCost, int costSoFar, int nodeLevel){
         //init state
-//        this.neo = new Neo(neo.maxCarry, new Tuple((int)neo.location.x, (int) neo.location.y));
-//        this.neo.hostagesCarried = (ArrayList<Hostage>) neo.hostagesCarried.clone();
+//        this.neo = new code.Neo(neo.maxCarry, new code.Tuple((int)neo.location.x, (int) neo.location.y));
+//        this.neo.hostagesCarried = (ArrayList<code.Hostage>) neo.hostagesCarried.clone();
         this.neo = neo;
         this.m = m;
         this.n = n;
@@ -52,7 +54,7 @@ public class Node {
 
 
     public String toString2() {
-        return ("Node{" +
+        return ("code.Node{" +
                 "\nneo=" + neo +
                 // "\n, TB=" + TB +
                 "\n, spawnedAgents=" + spawnedAgents +
@@ -70,9 +72,12 @@ public class Node {
         }
         return res;
     }
+    public int getNodeLevel() {
+        return nodeLevel;
+    }
     @Override
     public String toString() {
-        return ("Node{" +
+        return ("code.Node{" +
                 "\nneo=" + neo +
                 "\n, TB=" + TB +
                 "\n, spawnedAgents=" + spawnedAgents +

@@ -1,3 +1,5 @@
+package code;
+
 public class Agent {
     Tuple location;
 
@@ -7,6 +9,6 @@ public class Agent {
 
     @Override
     public String toString() {
-        return "Agent{ location=" + location +'}';
+        return "code.Agent{ location=" + location +'}';
     }
 }

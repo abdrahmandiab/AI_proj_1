@@ -1,8 +1,11 @@
+package tests;
+
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import code.Matrix;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;

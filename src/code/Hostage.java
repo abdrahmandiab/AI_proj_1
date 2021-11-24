@@ -1,3 +1,5 @@
+package code;
+
 public class Hostage {
     boolean wasCarried = false;
     int hp = 100;
@@ -29,7 +31,7 @@ public class Hostage {
 
     @Override
     public String toString() {
-        return "Hostage{" +
+        return "code.Hostage{" +
                 "wasCarried=" + wasCarried +
                 ", hp=" + hp +
                 ", alive=" + alive +

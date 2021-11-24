@@ -1,29 +1,31 @@
+package code;
+
 import java.util.*;
 
 //TODO heuristic function number 1 (city block distance, with infinite maxCarry)
-// takes in the hostages, wl TB, w Neo, wl turnedAgents
+// takes in the hostages, wl TB, w code.Neo, wl turnedAgents
 
 public class Matrix {
     public static int nodesExpanded = 0;
     public static String genGrid(){
         return "5,5;" +                         // 0 M,N
                 "2;" +                          // 1 C
-                "0,4;" +                        // 2 Neo x,y
+                "0,4;" +                        // 2 code.Neo x,y
                 "1,4;" +                        // 3 TB x,y
                 "0,1,1,1,2,1,3,1,3,3,3,4;" +    // 4 Agents (x,y) pairs
                 "1,0,2,4;" +                    // 5 pill1.x,pill1.y
                 "0,3,4,3,4,3,0,3;" +            // 6 pad1.x,pad1.y,pad2.x,pad2.y
-                "0,0,30,3,0,80,4,4,80";         // 7 Hostage.x,Hostage.y,Hostage.damage ...
+                "0,0,30,3,0,80,4,4,80";         // 7 code.Hostage.x,code.Hostage.y,code.Hostage.damage ...
 
         //EASY MODE
 //        return "5,5;" +                         // 0 M,N
 //                "2;" +                          // 1 C
-//                "0,4;" +                        // 2 Neo x,y
+//                "0,4;" +                        // 2 code.Neo x,y
 //                "1,4;" +                        // 3 TB x,y
 //                "0,0;" +    // 4 Agents (x,y) pairs
 //                "1,0,2,4;" +                    // 5 pill1.x,pill1.y
 //                "0,3,4,3;" +            // 6 pad1.x,pad1.y,pad2.x,pad2.y
-//                "0,3,30";         // 7 Hostage.x,Hostage.y,Hostage.damage ...
+//                "0,3,30";         // 7 code.Hostage.x,code.Hostage.y,code.Hostage.damage ...
     }
 
 
@@ -49,7 +51,7 @@ public class Matrix {
         Tuple TB = parseTB(arr[3]);
         ArrayList<Agent> spawnedAgents = parseAgents(arr[4]);
         ArrayList<Tuple> pills = parsePills(arr[5]);
-        Tuple[][] pads = parsePads(arr[6]); // pads[0][1] is a Tuple value with the coordinates of the second pad from the first pair
+        Tuple[][] pads = parsePads(arr[6]); // pads[0][1] is a code.Tuple value with the coordinates of the second pad from the first pair
         ArrayList<Hostage> hostages = parseHostages(arr[7]);
         Node initState = new Node(neo, m, n,TB,spawnedAgents,new ArrayList<Agent>(), hostages, pads, pills, "init", null, 0 ,0,1000,0, 0);
 
@@ -78,9 +80,9 @@ public class Matrix {
 //            System.out.println("======== ITERATION "+looper+"========");
 //            System.out.println();
 //
-//            for(Node n1 : actionQueue){ System.out.println(n1);System.out.println();}
+//            for(code.Node n1 : actionQueue){ System.out.println(n1);System.out.println();}
 //
-//            for(Node n1 : actionQueue){ states += " "+n1.thisMove;}
+//            for(code.Node n1 : actionQueue){ states += " "+n1.thisMove;}
 //            System.out.println("states in queue: " + states);
             // states = "";
 
@@ -97,7 +99,7 @@ public class Matrix {
             inTable = false;
             possibleStates = new ArrayList<Node>();
             Node popped = null;
-            if(strat == "DF" || strat =="BF" || strat =="IDS"){
+            if(strat == "DF" || strat =="BF" || strat =="ID"){
                 popped = actionQueue.remove();
             }else if(strat == "UC"){
                 popped = UCActionQueue.remove();
@@ -169,7 +171,7 @@ public class Matrix {
                 // The order Right now is <moveL, moveR, moveU, moveD, Fly, Carry, Drop,Take, Kill>
                 // moveL moveR moveU moveD should have similar cost
                 // only ONE of (Carry, Drop, Take) can be available at one time.
-                //      i.e. there can't be a (hostage and pill) in same cell or (pill and TB) or (Hostage and TB).
+                //      i.e. there can't be a (hostage and pill) in same cell or (pill and TB) or (code.Hostage and TB).
                 // For the kill action, we have 2 different scenarios (and that is if neo's hp > 20)
                 //      a) Some agents around were hostages that turned + maybe natural spawns. (in this case give low cost since we must kill them)
                 //      b) all agents around were spawned with grid. (in this case give kill high cost since he probably shouldn't kill them)
@@ -190,8 +192,8 @@ public class Matrix {
                 }
                 if (canDrop) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
-                   // Hostage hostageToDrop = neoM.hostagesCarried.get(0);
-//                    for (Hostage h : neoM.hostagesCarried) {
+                   // code.Hostage hostageToDrop = neoM.hostagesCarried.get(0);
+//                    for (code.Hostage h : neoM.hostagesCarried) {
 //                        if (h.hp < hostageToDrop.hp) {
 //                            hostageToDrop = h;
 //                        }
@@ -336,7 +338,20 @@ public class Matrix {
                         ;
                         break;
                     case "ID":
-                        ;
+                        int currentLevel = 1;
+                        int lastLevel;
+                        if(possibleStates.isEmpty())
+                            lastLevel = 0;
+                        else
+                            lastLevel = possibleStates.get(possibleStates.size()-1).getNodeLevel();
+                        for(int i = 0; i < lastLevel; i++) {
+                            for (Node state : possibleStates) {
+                                if (state.getNodeLevel() > currentLevel)
+                                    break;
+                                actionQueue.addLast(state);
+                            }
+                            currentLevel++;
+                        }
                         break;
                     case "UC":
                         for(Node state: possibleStates){
@@ -576,10 +591,10 @@ public class Matrix {
 //        int dist = 0;
 //        int minSoFar = 99999;
 //        ArrayList<Integer> distances= new ArrayList<Integer>();
-//        ArrayList<Hostage> hostagesCopy = (ArrayList<Hostage>) hostages.clone();
-//        Hostage ph = null;
+//        ArrayList<code.Hostage> hostagesCopy = (ArrayList<code.Hostage>) hostages.clone();
+//        code.Hostage ph = null;
 //
-//        for(Hostage h : hostages){
+//        for(code.Hostage h : hostages){
 //            dist = cityBlockDist(neo.location, h.location);
 //            if(dist< minSoFar){
 //                minSoFar =  dist;
@@ -588,10 +603,10 @@ public class Matrix {
 //        }
 //        hostagesCopy.remove(ph);
 //        distances.add(minSoFar);
-//        Hostage ph2 = null;
+//        code.Hostage ph2 = null;
 //        while(distances.size()< hostages.size()){
 //            minSoFar = 999999;
-//            for(Hostage h : hostagesCopy){
+//            for(code.Hostage h : hostagesCopy){
 //                dist = cityBlockDist(ph.location, h.location);
 //                if(dist< minSoFar){
 //                    minSoFar =  dist;
@@ -602,12 +617,12 @@ public class Matrix {
 //            hostagesCopy.remove(ph2);
 //            ph = ph2;
 //        }
-//        Agent agento = null;
-//        Agent phAgent = null;
-//        ArrayList<Agent> agentsCopy = (ArrayList<Agent>) turnedAgents.clone();
+//        code.Agent agento = null;
+//        code.Agent phAgent = null;
+//        ArrayList<code.Agent> agentsCopy = (ArrayList<code.Agent>) turnedAgents.clone();
 //        while(distances.size()< hostages.size()+turnedAgents.size()){
 //            minSoFar = 999999;
-//            for(Agent a : agentsCopy){
+//            for(code.Agent a : agentsCopy){
 //                dist = cityBlockDist(phAgent.location, a.location);
 //                if(dist< minSoFar){
 //                    minSoFar =  dist;
@@ -674,7 +689,7 @@ public class Matrix {
                 break;
             }
 //            if (((int)pads[i][1].x == (int) neo.location.x && (int)pads[i][1].y == (int) neo.location.y) ){
-//                neo.location = new Tuple(pads[i][0].x, pads[i][0].y);
+//                neo.location = new code.Tuple(pads[i][0].x, pads[i][0].y);
 //                break;
 //            }
         }
@@ -726,7 +741,7 @@ public class Matrix {
 
     public static void main(String args[]){
         String grid = genGrid();
-        String solution = solve(grid, "DF", true);
+        String solution = solve(grid, "ID", true);
         //System.out.println("hostages saved: "+ hostSaved);
         System.out.println(solution);
     }

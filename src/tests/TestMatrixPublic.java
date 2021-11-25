@@ -28,8 +28,100 @@ public class TestMatrixPublic {
 	String grid10 = "6,6;1;2,2;2,4;0,1,1,0,3,0,4,1,4,3,3,4,1,4,0,3,1,5;0,2;1,3,4,2,4,2,1,3;0,5,90,1,2,92,4,4,2,5,5,1,1,1,98";
 	String grid11 = "9,9;2;8,0;3,5;0,1,0,3,1,0,1,1,1,2,0,7,1,8,3,8,6,1,6,5;0,6,2,8;8,1,4,5,4,5,8,1;0,0,95,0,2,98,0,8,94,2,5,13,2,6,39";
 
+	@Test
+	public void testBF() throws Exception{
+		testa0();
+		testa1();
+		testa2();
+		testa3();
+		testa4();
+		testa5();
+		testa6();
+		testa7();
+		testa8();
+		testa9();
+		testa10();
+		testa11();
+	}
 
-	
+	@Test
+	public void testDF() throws Exception{
+		testb0();
+		testb1();
+		testb2();
+		testb3();
+		testb4();
+		testb5();
+		testb6();
+		testb7();
+		testb8();
+		testb9();
+		testb10();
+		testb11();
+	}
+
+	@Test
+	public void testUC() throws Exception{
+		testc0();
+		testc1();
+		testc2();
+		testc3();
+		testc4();
+		testc5();
+	}
+
+	@Test
+	public void testID() throws Exception{
+		testd0();
+		testd1();
+		testd2();
+		testd3();
+		testd4();
+		testd5();
+	}
+
+	@Test
+	public void testG1() throws Exception{
+		teste0();
+		teste1();
+		teste2();
+		teste3();
+		teste4();
+		teste5();
+	}
+
+	@Test
+	public void testG2() throws Exception{
+		testf0();
+		testf1();
+		testf2();
+		testf3();
+		testf4();
+		testf5();
+	}
+
+	@Test
+	public void testH1() throws Exception{
+		testg0();
+		testg1();
+		testg2();
+		testg3();
+		testg4();
+		testg5();
+	}
+
+
+	@Test
+	public void testH2() throws Exception{
+		testh0();
+		testh1();
+		testh2();
+		testh3();
+		testh5();
+		testh7();
+		testh10();
+	}
+
 	@Test(timeout = 10000)
 	public void testa0() throws Exception {
 		String solution = Matrix.solve(grid0, "BF", false);
@@ -116,6 +208,13 @@ public class TestMatrixPublic {
 		solution = solution.replace(" ", "");
 		System.out.println(solution);
 		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid10, solution));
+	}
+	@Test
+	public void testa11() throws Exception {
+		String solution = Matrix.solve(grid11, "BF", false);
+		solution = solution.replace(" ", "");
+		System.out.println(solution);
+		assertTrue("The output actions do not lead to a goal state.", applyPlan(grid11, solution));
 	}
 
 	@Test(timeout = 10000)

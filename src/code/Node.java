@@ -68,7 +68,7 @@ public class Node {
     public String getHostString(ArrayList<Hostage> hostages){
         String res = "";
         for (Hostage h : hostages){
-            res+= "["+h.alive+"]";
+            res+= "["+h.location+"]";
         }
         return res;
     }

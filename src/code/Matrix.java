@@ -386,7 +386,7 @@ public class Matrix {
 
     //Checks
     public static boolean goalTest(ArrayList<Hostage> hostages, ArrayList<Agent> turnedAgents, Neo neo, Tuple TB){
-        return (hostages.isEmpty() && neo.hostagesCarried.isEmpty()&& turnedAgents.isEmpty() && checkTB(neo,TB));
+        return (hostages.isEmpty() && neo.currentlyCarrying==0 && turnedAgents.isEmpty() && checkTB(neo,TB));
     }
     public static Hostage checkCarry(Neo neo, ArrayList<Hostage> hostages){
         for (Hostage h: hostages){
@@ -560,14 +560,15 @@ public class Matrix {
     //Passives
     public static int  applyPoisonToHostages(Neo neo, ArrayList<Hostage> hostages, ArrayList<Agent> turnedAgents){
         int numDeaths = 0;
-        for (Hostage h: neo.hostagesCarried){
+        ArrayList<Hostage> hostagesCarried2 = (ArrayList<Hostage>) neo.hostagesCarried.clone();
+        for (Hostage h: hostagesCarried2){
             //if hostage being carried no need to make a new agent, just leave it carried on neo.
-            if(h.alive){
+
                 boolean alive = h.poisonTrigger();
                 if (!alive){
-                    numDeaths +=1;
+                    neo.hostagesCarried.remove(h);
+                    numDeaths+=1;
                 }
-            }
         }
         ArrayList<Hostage> hostages2 = (ArrayList<Hostage>)hostages.clone();
         for (Hostage h: hostages2){

@@ -38,7 +38,6 @@ public class Neo {
                 ", location=" + location +
                 ", maxCarry=" + maxCarry +
                 ", currentlyCarrying=" + currentlyCarrying +
-                ", hostagesCarried=" + hostagesCarried +
                 '}';
     }
 }

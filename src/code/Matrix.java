@@ -132,6 +132,12 @@ public class Matrix {
 
                 // Extract variables from the state we popped
                 Neo neoPopped = popped.neo;
+                int numDeathsThisTurn = 0;
+                if(popped!=initState) {
+                    numDeathsThisTurn = applyPoisonToHostages(neoPopped, popped.hostages, popped.turnedAgents);
+                }else{
+                    numDeathsThisTurn = 0;
+                }
                 ArrayList<Hostage> hostagesPopped = new ArrayList<Hostage>();
                 for (Hostage h : popped.hostages) {
                     hostagesPopped.add(new Hostage(new Tuple((int) h.location.x, (int) h.location.y), 100 - h.hp));
@@ -140,12 +146,8 @@ public class Matrix {
                 ArrayList<Agent> turnedAgentsPopped = popped.turnedAgents;
                 ArrayList<Tuple> pillsPopped = popped.pills;
                 //Apply passive stuff
-                int numDeathsThisTurn = 0;
-                if(popped!=initState) {
-                    numDeathsThisTurn = applyPoisonToHostages(neoPopped, hostagesPopped, turnedAgentsPopped);
-                }else{
-                    numDeathsThisTurn = 0;
-                }
+//                int numDeathsThisTurn = 0;
+
 
                 //LOW PRIORITY
                 int badKillCost = 100;
@@ -279,16 +281,25 @@ public class Matrix {
                 }
                 if (canTake) {
                     Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
-
-                    Take(neoM, hostagesPopped, pillsPopped);
+                    ArrayList<Hostage> hostagesPilled = new ArrayList<Hostage>();
+                    for(Hostage h : hostagesPopped){
+                        Hostage h1 = new Hostage(new Tuple((int)h.location.x,(int)h.location.y),100-h.hp);
+                        hostagesPilled.add(h1);
+                    }
+                    ArrayList<Tuple> pillsPilled = new ArrayList<Tuple>();
+                    for(Tuple p : pillsPopped){
+                        Tuple p1 = new Tuple((int)p.x,(int)p.y);
+                        pillsPilled.add(p1);
+                    }
+                    Take(neoM, hostagesPilled, pillsPilled);
                     int heuristicValue = 0;
                     if(strat =="GR1" || strat =="AS1"){
-                        heuristicValue = H1(turnedAgentsPopped,hostagesPopped,neoM,TB);
+                        heuristicValue = H1(turnedAgentsPopped,hostagesPilled,neoM,TB);
                     }
                     else if (strat =="GR2" || strat =="AS2"){
-                        heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
+                        heuristicValue = H2(turnedAgentsPopped,hostagesPilled,neoM,TB);
                     }
-                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "takePill" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ takeCost, popped.nodeLevel+1);
+                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPilled, pads, pillsPilled, "takePill" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ takeCost, popped.nodeLevel+1);
                     possibleStates.add(DropNode);
                 }
                 if (neoPopped.hp > 20) {

@@ -61,7 +61,7 @@ public class Node {
                 "\n, hostages=" + getHostString(hostages) +
                 "\n, turnedAgents=" + turnedAgents +
                 // "\n, pads=" + Arrays.toString(pads) +
-                // "\n, pills=" + pills +
+                 "\n, pills=" + pills.size() +
                 // "\n, thisMove="+ thisMove +
                 '}');
     }

@@ -22,7 +22,7 @@ public class Hostage {
     }
     public void HealDamage(){
         if(alive){
-            hp+=20;
+            hp+=22;
             if (hp>100){
                 hp = 100;
             }

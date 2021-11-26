@@ -60,15 +60,15 @@ public class TestMatrixPublic {
 //		testb11();
 //	}
 //
-	@Test
-	public void testUC() throws Exception{
-		testc0();
-		testc1();
-		testc2();
-		testc3();
-		testc4();
-		testc5();
-	}
+//	@Test
+//	public void testUC() throws Exception{
+//		testc0();
+//		testc1();
+//		testc2();
+//		testc3();
+//		testc4();
+//		testc5();
+//	}
 
 //	@Test
 //	public void testID() throws Exception{
@@ -80,47 +80,47 @@ public class TestMatrixPublic {
 //		testd5();
 //	}
 //
-	@Test
-	public void testG1() throws Exception{
-		teste0();
-		teste1();
-		teste2();
-		teste3();
-		teste4();
-		teste5();
-	}
+//	@Test
+//	public void testG1() throws Exception{
+//		teste0();
+//		teste1();
+//		teste2();
+//		teste3();
+//		teste4();
+//		teste5();
+//	}
 
-	@Test
-	public void testG2() throws Exception{
-		testf0();
-		testf1();
-		testf2();
-		testf3();
-		testf4();
-		testf5();
-	}
+//	@Test
+//	public void testG2() throws Exception{
+//		testf0();
+//		testf1();
+//		testf2();
+//		testf3();
+//		testf4();
+//		testf5();
+//	}
 
-	@Test
-	public void testAS1() throws Exception{
-		testg0();
-		testg1();
-		testg2();
-		testg3();
-		testg4();
-		testg5();
-	}
-
+//	@Test
+//	public void testAS1() throws Exception{
+//		testg0();
+//		testg1();
+//		testg2();
+//		testg3();
+//		testg4();
+//		testg5();
+//	}
 //
-	@Test
-	public void testAS2() throws Exception{
-		testh0();
-		testh1();
-		testh2();
-		testh3();
-		testh5();
-		testh7();
-		testh10();
-	}
+////
+//	@Test
+//	public void testAS2() throws Exception{
+//		testh0();
+//		testh1();
+//		testh2();
+//		testh3();
+//		testh5();
+//		testh7();
+//		testh10();
+//	}
 
 	@Test(timeout = 10000)
 	public void testa0() throws Exception {

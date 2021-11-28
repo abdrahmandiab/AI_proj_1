@@ -3,7 +3,6 @@ package code;
 import java.util.*;
 
 //TODO add penalty on hostage death.
-//TODO sohob add damage to hostage string in genGrid
 public class Matrix {
     public static int nodesExpanded = 0;
         @SuppressWarnings("rawtypes")
@@ -16,15 +15,26 @@ public class Matrix {
             int maxSpawns = gridHeight * gridWidth;
             ArrayList<Tuple> Locations = new ArrayList<Tuple>(); //Holds locations of every object to avoid overlapping
 
+            int hostageNumber = 10000;
+            int agentNumber = 10000;
+            int pillNumber = 10000;
+            int padNumber = 10000;
+
+            while((hostageNumber + agentNumber + pillNumber + padNumber*2) > maxSpawns-2){
+                hostageNumber = rng.nextInt(8) + 3;
+                agentNumber = rng.nextInt(maxSpawns);
+                pillNumber = rng.nextInt(hostageNumber+1)+1;
+                padNumber = rng.nextInt(maxSpawns)/2;
+            }
+
+
             //Start generating locations of objects
 
             //Neo
             Tuple<Integer, Integer> neo = new Tuple<Integer, Integer>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
             Locations.add(neo);
-
             //Telephone Booth
             Tuple<Integer, Integer> tel = new Tuple<Integer, Integer>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
-
             //Ensure TB is not at the same location as Neo el fager
             while(Locations.contains(tel))
                 tel = new Tuple<Integer, Integer>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
@@ -41,7 +51,6 @@ public class Matrix {
                     + tel.x + "," + tel.y + ";";
 
             // Generate Agents and their locations
-            int agentNumber = rng.nextInt(maxSpawns - Locations.size());
             Tuple[] agentLocation = new Tuple[agentNumber];
             for (int i = 0; i < agentNumber; i++) {
                 Tuple<Integer, Integer> agent = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
@@ -55,10 +64,7 @@ public class Matrix {
             out += ";";
 
             // We need to define number of hostages now as pills depend on it
-            int hostageNumber = rng.nextInt(8) + 3;
-
             // Generate pills and their locations
-            int pillNumber = rng.nextInt(hostageNumber+1);
             Tuple[] pillLocation = new Tuple[pillNumber];
             for (int i = 0; i < pillNumber; i++) {
                 Tuple<Integer, Integer> pill = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
@@ -72,7 +78,6 @@ public class Matrix {
             out += ";";
 
             //Generate pads and their locations
-            int padNumber = rng.nextInt((maxSpawns - Locations.size())/2);
             Tuple[] padLocation = new Tuple [padNumber];
             Tuple[] pad2Location = new Tuple [padNumber];
             for (int i = 0; i<padNumber;i++)
@@ -87,7 +92,7 @@ public class Matrix {
                 Locations.add(pad2);
                 padLocation[i]=pad;
                 pad2Location[i]=pad2;
-                out += pad.x + "," + pad.y + "," + pad2.x + "," + pad2.y + ",";
+                out += pad.x + "," + pad.y + "," + pad2.x + "," + pad2.y + "," + pad2.x + "," + pad2.y + "," + pad.x + "," + pad.y + ",";
             }
             out = out.substring(0,out.length()-1);
             out += ";";
@@ -103,7 +108,7 @@ public class Matrix {
                     hostage = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
                 Locations.add(hostage);
                 hostageLocation[i] = hostage;
-                out += hostage.x + "," + hostage.y + ",";
+                out += hostage.x + "," + hostage.y + "," + hostageStartDmg[i] + ",";
             }
             out = out.substring(0, out.length() - 1);
             out += ";";
@@ -916,9 +921,9 @@ public class Matrix {
         String grid2 = "6,6;2;2,4;2,2;0,4,1,4,3,0,4,2;0,1,1,3;4,4,3,1,3,1,4,4;0,0,92,1,2,38";
         //String solution = solve(grid, "BF", true);
         System.out.println(grid);
-        String solution = solve(grid2, "UC", true);
+        //String solution = solve(grid2, "UC", true);
         //System.out.println("hostages saved: "+ hostSaved);
-        System.out.println(solution);
+        //System.out.println(solution);
     }
 
 }

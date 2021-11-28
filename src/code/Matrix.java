@@ -2,31 +2,134 @@ package code;
 
 import java.util.*;
 
-//TODO heuristic function number 1 (city block distance, with infinite maxCarry)
-// takes in the hostages, wl TB, w code.Neo, wl turnedAgents
-
+//TODO add penalty on hostage death.
+//TODO sohob add damage to hostage string in genGrid
 public class Matrix {
     public static int nodesExpanded = 0;
-    public static String genGrid(){
-        return "5,5;" +                         // 0 M,N
-                "2;" +                          // 1 C
-                "0,4;" +                        // 2 code.Neo x,y
-                "1,4;" +                        // 3 TB x,y
-                "0,1,1,1,2,1,3,1,3,3,3,4;" +    // 4 Agents (x,y) pairs
-                "1,0,2,4;" +                    // 5 pill1.x,pill1.y
-                "0,3,4,3,4,3,0,3;" +            // 6 pad1.x,pad1.y,pad2.x,pad2.y
-                "2,0,78";         // 7 Hostage.x,Hostage.y,Hostage.damage ...
+        @SuppressWarnings("rawtypes")
+        public static String genGrid()
+        {
+            //Randomize generated objects numbers
+            Random rng = new Random();
+            int gridWidth = rng.nextInt(11)+5;
+            int gridHeight = rng.nextInt(11)+5;
+            int maxSpawns = gridHeight * gridWidth;
+            ArrayList<Tuple> Locations = new ArrayList<Tuple>(); //Holds locations of every object to avoid overlapping
 
-        //EASY MODE
+            //Start generating locations of objects
+
+            //Neo
+            Tuple<Integer, Integer> neo = new Tuple<Integer, Integer>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+            Locations.add(neo);
+
+            //Telephone Booth
+            Tuple<Integer, Integer> tel = new Tuple<Integer, Integer>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+
+            //Ensure TB is not at the same location as Neo el fager
+            while(Locations.contains(tel))
+                tel = new Tuple<Integer, Integer>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+            Locations.add(tel);
+
+            //Carry capacity of Neo
+            int c = rng.nextInt(4)+1;
+
+            //Start building the output string representing the grid
+            String out = "";
+            out = gridWidth + "," + gridHeight + ";"
+                    + c + ";"
+                    + neo.x + "," + neo.y + ";"
+                    + tel.x + "," + tel.y + ";";
+
+            // Generate Agents and their locations
+            int agentNumber = rng.nextInt(maxSpawns - Locations.size());
+            Tuple[] agentLocation = new Tuple[agentNumber];
+            for (int i = 0; i < agentNumber; i++) {
+                Tuple<Integer, Integer> agent = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                while (Locations.contains(agent))
+                    agent = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                Locations.add(agent);
+                agentLocation[i] = agent;
+                out += agent.x + "," + agent.y + ",";
+            }
+            out = out.substring(0, out.length() - 1);
+            out += ";";
+
+            // We need to define number of hostages now as pills depend on it
+            int hostageNumber = rng.nextInt(8) + 3;
+
+            // Generate pills and their locations
+            int pillNumber = rng.nextInt(hostageNumber+1);
+            Tuple[] pillLocation = new Tuple[pillNumber];
+            for (int i = 0; i < pillNumber; i++) {
+                Tuple<Integer, Integer> pill = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                while (Locations.contains(pill))
+                    pill = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                Locations.add(pill);
+                pillLocation[i] = pill;
+                out += pill.x + "," + pill.y + ",";
+            }
+            out = out.substring(0, out.length() - 1);
+            out += ";";
+
+            //Generate pads and their locations
+            int padNumber = rng.nextInt((maxSpawns - Locations.size())/2);
+            Tuple[] padLocation = new Tuple [padNumber];
+            Tuple[] pad2Location = new Tuple [padNumber];
+            for (int i = 0; i<padNumber;i++)
+            {
+                Tuple<Integer, Integer> pad = new Tuple<>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+                Tuple<Integer, Integer> pad2 = new Tuple<>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+                while(Locations.contains(pad))
+                    pad = new Tuple<>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+                while(Locations.contains(pad))
+                    pad2 = new Tuple<>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+                Locations.add(pad);
+                Locations.add(pad2);
+                padLocation[i]=pad;
+                pad2Location[i]=pad2;
+                out += pad.x + "," + pad.y + "," + pad2.x + "," + pad2.y + ",";
+            }
+            out = out.substring(0,out.length()-1);
+            out += ";";
+
+
+            // Generate Hostages and their locations
+            int[] hostageStartDmg = new int[hostageNumber];
+            Tuple[] hostageLocation = new Tuple[hostageNumber];
+            for (int i = 0; i < hostageNumber; i++) {
+                Tuple<Integer, Integer> hostage = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                hostageStartDmg[i] = rng.nextInt(98) + 1;
+                while (Locations.contains(hostage))
+                    hostage = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                Locations.add(hostage);
+                hostageLocation[i] = hostage;
+                out += hostage.x + "," + hostage.y + ",";
+            }
+            out = out.substring(0, out.length() - 1);
+            out += ";";
+
+            return out;
+
+        }
 //        return "5,5;" +                         // 0 M,N
 //                "2;" +                          // 1 C
 //                "0,4;" +                        // 2 code.Neo x,y
 //                "1,4;" +                        // 3 TB x,y
-//                "0,0;" +    // 4 Agents (x,y) pairs
+//                "0,1,1,1,2,1,3,1,3,3,3,4;" +    // 4 Agents (x,y) pairs
 //                "1,0,2,4;" +                    // 5 pill1.x,pill1.y
-//                "0,3,4,3;" +            // 6 pad1.x,pad1.y,pad2.x,pad2.y
-//                "0,3,30";         // 7 code.Hostage.x,code.Hostage.y,code.Hostage.damage ...
-    }
+//                "0,3,4,3,4,3,0,3;" +            // 6 pad1.x,pad1.y,pad2.x,pad2.y
+//                "2,0,78";         // 7 Hostage.x,Hostage.y,Hostage.damage ...
+//
+////        //EASY MODE
+////        return "5,5;" +                         // 0 M,N
+////                "2;" +                          // 1 C
+////                "0,4;" +                        // 2 code.Neo x,y
+////                "1,4;" +                        // 3 TB x,y
+////                "1,3;" +    // 4 Agents (x,y) pairs
+////                "1,0,2,4;" +                    // 5 pill1.x,pill1.y
+////                "0,3,4,3;" +            // 6 pad1.x,pad1.y,pad2.x,pad2.y
+////                "0,3,30";         // 7 code.Hostage.x,code.Hostage.y,code.Hostage.damage ...
+//    }
 
 
     public static String solve(String grid, String strat, boolean viz){
@@ -78,7 +181,7 @@ public class Matrix {
 
 //        // Loop while it is not solved, and the queue is not empty.
 //
-            //while(looper<100){
+        //while(looper<100){
             looper++;
 //            System.out.println("======== ITERATION "+looper+"========");
 //            System.out.println();
@@ -127,8 +230,14 @@ public class Matrix {
                 isSolved = goalTest(popped.hostages, popped.turnedAgents, popped.neo,popped.TB);
                 //System.out.println("Solved: " + isSolved + popped.hostages + popped.turnedAgents + popped.neo.hostagesCarried + ", action: " + popped.thisMove + ", neo-location: " + popped.neo.location + " TB: (" + TB.x + "," + TB.y + ")");
                 if (isSolved) {
-                    return makeStringOfMoves(popped);
-                }
+                    String solution = makeStringOfMoves(popped);
+                    if(viz){
+                    ArrayList<Node> nodes =  getNodes(popped);
+                    for(Node node : nodes){
+                        solution = printGrid(node,m,n)+"\n"+solution;
+                    }
+                    }
+                    return solution; }
 
                 // Extract variables from the state we popped
                 Neo neoPopped = popped.neo;
@@ -167,10 +276,10 @@ public class Matrix {
                 spawnedAgentsAround = checkAgentsNearby(neoPopped, spawnedAgentsPopped);
                 turnedAgentsAround = checkAgentsNearby(neoPopped, turnedAgentsPopped);
 
-                canMoveL = checkCanMoveL(neoPopped, spawnedAgentsAround, turnedAgentsAround);
-                canMoveR = checkCanMoveR(neoPopped , spawnedAgentsAround, turnedAgentsAround, n);
-                canMoveU = checkCanMoveU(neoPopped, spawnedAgentsAround, turnedAgentsAround);
-                canMoveD = checkCanMoveD(neoPopped, spawnedAgentsAround, turnedAgentsAround, m);
+                canMoveL = checkCanMoveL(neoPopped, spawnedAgentsAround, turnedAgentsAround, hostagesPopped);
+                canMoveR = checkCanMoveR(neoPopped , spawnedAgentsAround, turnedAgentsAround, n, hostagesPopped);
+                canMoveU = checkCanMoveU(neoPopped, spawnedAgentsAround, turnedAgentsAround, hostagesPopped);
+                canMoveD = checkCanMoveD(neoPopped, spawnedAgentsAround, turnedAgentsAround, m, hostagesPopped);
                 //System.out.println(neoPopped.location+ " canMoveL "+ canMoveL + " canMoveR " + canMoveR + " canMoveU "
                 //        +canMoveU + " canMoveD " + canMoveD + " canFly " + canFly + " canDrop " + canDrop + " canTake: "+ canTake );
 
@@ -195,7 +304,7 @@ public class Matrix {
                     }else if (strat =="GR2" || strat =="AS2"){
                         heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoC,TB);
                     }
-                    Node CarryNode = new Node(neoC, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, h3, pads, pillsPopped, "carry", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ carryCost, popped.nodeLevel+1);
+                    Node CarryNode = new Node(neoC, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, h3, pads, pillsPopped, "carry", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ carryCost, popped.nodeLevel+1);
                     possibleStates.add(CarryNode);
                 }
                 if (canDrop) {
@@ -215,7 +324,7 @@ public class Matrix {
                     else if (strat =="GR2" || strat =="AS2"){
                         heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
                     }
-                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "drop", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ dropCost, popped.nodeLevel+1);
+                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "drop", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ dropCost, popped.nodeLevel+1);
                     possibleStates.add(DropNode);
                 }
                 if (canFly) {
@@ -227,7 +336,7 @@ public class Matrix {
                     }else if (strat =="GR2" || strat =="AS2"){
                         heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
                     }
-                    Node FlyNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "fly", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ flyCost, popped.nodeLevel+1);
+                    Node FlyNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "fly", popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ flyCost, popped.nodeLevel+1);
                     possibleStates.add(FlyNode);
                 }
                 if (canMoveL) {
@@ -239,7 +348,7 @@ public class Matrix {
                     }else if (strat =="GR2" || strat =="AS2"){
                         heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
                     }
-                    Node LMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "left" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost, popped.nodeLevel+1);
+                    Node LMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "left" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ moveCost, popped.nodeLevel+1);
                     possibleStates.add(LMoveNode);
                 }
                 if (canMoveR) {
@@ -251,7 +360,7 @@ public class Matrix {
                     }else if (strat =="GR2" || strat =="AS2"){
                         heuristicValue = H2(turnedAgentsPopped, hostagesPopped,neoM, TB);
                     }
-                    Node RMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "right" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost, popped.nodeLevel+1);
+                    Node RMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "right" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ moveCost, popped.nodeLevel+1);
                     possibleStates.add(RMoveNode);
                 }
                 if (canMoveU) {
@@ -263,7 +372,7 @@ public class Matrix {
                     }else if (strat =="GR2" || strat =="AS2"){
                         heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
                     }
-                    Node UMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "up" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost, popped.nodeLevel+1);
+                    Node UMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "up" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ moveCost, popped.nodeLevel+1);
                     possibleStates.add(UMoveNode);
                 }
                 if (canMoveD) {
@@ -276,7 +385,7 @@ public class Matrix {
                     else if (strat =="GR2" || strat =="AS2"){
                         heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
                     }
-                    Node DMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "down" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ moveCost, popped.nodeLevel+1);
+                    Node DMoveNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "down" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ moveCost, popped.nodeLevel+1);
                     possibleStates.add(DMoveNode);
                 }
                 if (canTake) {
@@ -299,17 +408,19 @@ public class Matrix {
                     else if (strat =="GR2" || strat =="AS2"){
                         heuristicValue = H2(turnedAgentsPopped,hostagesPilled,neoM,TB);
                     }
-                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPilled, pads, pillsPilled, "takePill" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ takeCost, popped.nodeLevel+1);
+                    Node DropNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPilled, pads, pillsPilled, "takePill" , popped, popped.numKills, popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ takeCost, popped.nodeLevel+1);
                     possibleStates.add(DropNode);
                 }
                 if (neoPopped.hp > 20) {
-                    if (turnedAgentsAround.size() != 0) { // (a)
+                    if (turnedAgentsAround.size() != 0 && (hostageWithNeoInCell==null || hostageWithNeoInCell.hp>2)) { // (a)
                         ArrayList<Agent> allAgentsAround = new ArrayList<Agent>();
                         allAgentsAround.addAll(turnedAgentsAround);
                         allAgentsAround.addAll(spawnedAgentsAround);
 
                         Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
-                        Kill(neoM, allAgentsAround, turnedAgentsPopped, spawnedAgentsPopped);
+                        ArrayList<Agent> turnedAgentsPoppedCopy = (ArrayList<Agent>) turnedAgentsPopped.clone();
+                        ArrayList<Agent> spawnedAgentsPoppedCopy = (ArrayList<Agent>) spawnedAgentsPopped.clone();
+                        Kill(neoM, allAgentsAround, turnedAgentsPoppedCopy, spawnedAgentsPoppedCopy);
                         int heuristicValue = 0;
                         if(strat =="GR1" || strat =="AS1"){
                             heuristicValue = H1(turnedAgentsPopped,hostagesPopped,neoM,TB);
@@ -317,12 +428,14 @@ public class Matrix {
                         else if (strat =="GR2" || strat =="AS2"){
                             heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
                         }
-                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill", popped, popped.numKills + allAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ goodKillCost, popped.nodeLevel+1);
+                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPoppedCopy, turnedAgentsPoppedCopy, hostagesPopped, pads, pillsPopped, "kill", popped, popped.numKills + allAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ goodKillCost, popped.nodeLevel+1);
                         possibleStates.add(KillNode);
                     }
-                    if (spawnedAgentsAround.size() != 0 && turnedAgentsAround.size() == 0) { // (b)
+                    if (spawnedAgentsAround.size() != 0 && turnedAgentsAround.size() == 0  && (hostageWithNeoInCell==null || hostageWithNeoInCell.hp>2)) { // (b)
                         Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
-                        Kill(neoM, spawnedAgentsAround,  turnedAgentsPopped, spawnedAgentsPopped);
+                        ArrayList<Agent> turnedAgentsPoppedCopy = (ArrayList<Agent>) turnedAgentsPopped.clone();
+                        ArrayList<Agent> spawnedAgentsPoppedCopy = (ArrayList<Agent>) spawnedAgentsPopped.clone();
+                        Kill(neoM, spawnedAgentsAround,  turnedAgentsPoppedCopy, spawnedAgentsPoppedCopy);
                         int heuristicValue = 0;
                         if(strat =="GR1" || strat =="AS1"){
                             heuristicValue = H1(turnedAgentsPopped,hostagesPopped,neoM,TB);
@@ -330,7 +443,7 @@ public class Matrix {
                         else if (strat =="GR2" || strat =="AS2"){
                             heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
                         }
-                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPopped, turnedAgentsPopped, hostagesPopped, pads, pillsPopped, "kill" , popped, popped.numKills + spawnedAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ badKillCost, popped.nodeLevel+1);
+                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPoppedCopy, turnedAgentsPoppedCopy, hostagesPopped, pads, pillsPopped, "kill" , popped, popped.numKills + spawnedAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ badKillCost, popped.nodeLevel+1);
                         possibleStates.add(KillNode);
                     }
                 }
@@ -457,8 +570,9 @@ public class Matrix {
         }
         return false;
     }
-    public static boolean checkCanMoveL(Neo neo , ArrayList<Agent> spawnedAgentsAround, ArrayList<Agent> turnedAgentsAround){
+    public static boolean checkCanMoveL(Neo neo , ArrayList<Agent> spawnedAgentsAround, ArrayList<Agent> turnedAgentsAround, ArrayList<Hostage> hostageArr){
         boolean agentLeft = false;
+        boolean hostageDyingLeft = false;
         for(Agent a: spawnedAgentsAround){
             if ((int)a.location.y == (int)neo.location.y - 1){
                 agentLeft = true;
@@ -469,10 +583,16 @@ public class Matrix {
                 agentLeft = true;
             }
         }
-        return ((int)neo.location.y !=0 && !agentLeft);
+        for(Hostage h: hostageArr){
+            if ((int)h.location.y == (int)neo.location.y - 1 && h.hp<=2){
+                hostageDyingLeft = true;
+            }
+        }
+        return ((int)neo.location.y !=0 && !agentLeft && !hostageDyingLeft);
     }
-    public static boolean checkCanMoveR(Neo neo, ArrayList<Agent> spawnedAgentsAround, ArrayList<Agent> turnedAgentsAround,  int n){
+    public static boolean checkCanMoveR(Neo neo, ArrayList<Agent> spawnedAgentsAround, ArrayList<Agent> turnedAgentsAround,  int n, ArrayList<Hostage> hostageArr){
         boolean agentRight = false;
+        boolean hostageDyingRight = false;
         for(Agent a: spawnedAgentsAround){
             if ((int)a.location.y == (int)neo.location.y + 1){
                 agentRight = true;
@@ -483,10 +603,16 @@ public class Matrix {
                 agentRight = true;
             }
         }
-        return (((int)neo.location.y !=(n-1)) && !agentRight);
+        for(Hostage h: hostageArr){
+            if ((int)h.location.y == (int)neo.location.y + 1 && h.hp<=2){
+                hostageDyingRight = true;
+            }
+        }
+        return (((int)neo.location.y !=(n-1)) && !agentRight && !hostageDyingRight);
     }
-    public static boolean checkCanMoveU(Neo neo , ArrayList<Agent> spawnedAgentsAround, ArrayList<Agent> turnedAgentsAround){
+    public static boolean checkCanMoveU(Neo neo , ArrayList<Agent> spawnedAgentsAround, ArrayList<Agent> turnedAgentsAround, ArrayList<Hostage> hostageArr){
         boolean agentUp = false;
+        boolean hostageDyingUp = false; //if there is a dying hostage up, set to true.
         for(Agent a: spawnedAgentsAround){
             if ((int)a.location.x == (int)neo.location.x - 1){
                 agentUp = true;
@@ -497,10 +623,16 @@ public class Matrix {
                 agentUp = true;
             }
         }
-        return ((int)neo.location.x !=0 && !agentUp);
+        for(Hostage h: hostageArr){
+            if ((int)h.location.x == (int)neo.location.x - 1 && h.hp<=2){ // if hostage is up
+                hostageDyingUp = true;
+            }
+        }
+        return ((int)neo.location.x !=0 && !agentUp && !hostageDyingUp);
     }
-    public static boolean checkCanMoveD(Neo neo, ArrayList<Agent> spawnedAgentsAround, ArrayList<Agent> turnedAgentsAround, int m){
+    public static boolean checkCanMoveD(Neo neo, ArrayList<Agent> spawnedAgentsAround, ArrayList<Agent> turnedAgentsAround, int m, ArrayList<Hostage> hostageArr){
         boolean agentDown = false;
+        boolean hostageDyingDown = false;
         for(Agent a: spawnedAgentsAround){
             if ((int)a.location.x == (int)neo.location.x + 1){
                 agentDown = true;
@@ -511,7 +643,12 @@ public class Matrix {
                 agentDown = true;
             }
         }
-        return ((int)neo.location.x !=m-1 && !agentDown);
+        for(Hostage h: hostageArr){
+            if ((int)h.location.x == (int)neo.location.x + 1 && h.hp<=2){
+                hostageDyingDown = true;
+            }
+        }
+        return ((int)neo.location.x !=m-1 && !agentDown && !hostageDyingDown);
     }
 
     //Parsing
@@ -694,10 +831,92 @@ public class Matrix {
         return result + "; " + n.numDeaths+"; " + n.numKills + "; " +nodesExpanded ;
 
     }
+    public static ArrayList<Node> getNodes(Node n){
+        ArrayList<Node> parents = new ArrayList<Node>();
+
+        Node currentNode = n;
+        while(currentNode != null ){
+            parents.add(currentNode);
+            currentNode = currentNode.parent;
+        }
+        return parents;
+
+    }
+    public static String printGrid(Node node, int m , int n){
+        //_______________________________
+        //|     |     |     |     |     |
+        //|(7,7)|H(23)|     |     |     |
+        //|     |     |     |     |     |
+        //|     |     |     |     |     |
+        //|     |     |     |     |     |
+        //_______________________________
+        //("4,3,H23;", "4,5,N" )
+        String contents = "";
+        String matrix = "";
+        contents+=  node.neo.location.x+ "," + node.neo.location.y + ",   N  ;";
+        contents+=  node.TB.x+ "," + node.TB.y + ",  TB  ;";
+        for(Agent a : node.spawnedAgents){
+            contents+= a.location.x +","+a.location.y+",  A   ;";
+        }
+        for(Agent a : node.turnedAgents){
+            contents+= a.location.x +","+a.location.y+",  TA ;";
+        }
+        for(Hostage h : node.hostages){
+            contents+= h.location.x +","+h.location.y+", H("+(100-h.hp)+");";
+        }
+        for(Tuple[] PP : node.pads){
+            contents+= PP[0].x +","+PP[0].y+",( "+PP[1].x+":"+PP[1].y+");";
+        }
+        for(Tuple p: node.pills){
+            contents+= p.x +","+p.y+",  P   ;";
+        }
+
+        String [] strs = contents.split(";");
+        //matrix+= node.spawnedAgents+"\n\n";
+        matrix+= node.thisMove+"\n";
+        for(int i= 0; i<m; i++){
+            matrix += "-------";
+        }
+        matrix+="\n";
+        for(int i=0; i<m; i++){
+            for (int j =0; j<n; j++){
+                String spaces = "|      |";
+                boolean neoHere = false;
+                for(int k=0; k< strs.length; k++){
+                    String[] commaSplits = strs[k].split(",");
+                    if(Integer.parseInt(commaSplits[0]) == i && Integer.parseInt(commaSplits[1]) == j ){
+                        spaces= "|";
+                        if(neoHere){
+                            spaces+="N";
+                        }
+                        spaces+=commaSplits[2]+"|";
+                        if(commaSplits[2].contains("N")){
+                            neoHere=true;
+                        }
+                    }
+                }
+                matrix+=spaces;
+
+            }
+            matrix+="\n";
+        }
+
+        for(int i=0;i<m; i++){
+
+        }
+        for(int i= 0; i<m; i++){
+            matrix += "-------";
+        }
+        matrix+= "\n \n";
+        return matrix;
+    }
 
     public static void main(String args[]){
         String grid = genGrid();
-        String solution = solve(grid, "BF", true);
+        String grid2 = "6,6;2;2,4;2,2;0,4,1,4,3,0,4,2;0,1,1,3;4,4,3,1,3,1,4,4;0,0,92,1,2,38";
+        //String solution = solve(grid, "BF", true);
+        System.out.println(grid);
+        String solution = solve(grid2, "UC", true);
         //System.out.println("hostages saved: "+ hostSaved);
         System.out.println(solution);
     }

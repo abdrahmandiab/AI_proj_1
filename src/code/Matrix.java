@@ -242,6 +242,7 @@ public class Matrix {
                         solution = printGrid(node,m,n)+"\n"+solution;
                     }
                     }
+                    System.out.println(solution);
                     return solution; }
 
                 // Extract variables from the state we popped
@@ -741,7 +742,9 @@ public class Matrix {
     public static int H1(ArrayList<Agent> turnedAgents, ArrayList<Hostage> hostages,Neo neo, Tuple tb){
         int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty())?0:1;
         //System.out.println(turnedAgents.size()+ hostages.size() + neo.currentlyCarrying+n);
-        return turnedAgents.size()+n;
+        int j = (neo.currentlyCarrying==0)?0:1; // if he's currently carrying he must perform a drop
+        return turnedAgents.size()/4 + hostages.size() + j + n;
+        //return turnedAgents.size() + n;
     }
     public static int H2( ArrayList<Agent> turnedAgents,ArrayList<Hostage> hostages ,Neo neo, Tuple tb){
         int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty())?0:1;
@@ -919,8 +922,10 @@ public class Matrix {
     public static void main(String args[]){
         String grid = genGrid();
         String grid2 = "6,6;2;2,4;2,2;0,4,1,4,3,0,4,2;0,1,1,3;4,4,3,1,3,1,4,4;0,0,92,1,2,38";
-        //String solution = solve(grid, "BF", true);
-        System.out.println(grid);
+        String grid11 = "9,9;2;8,0;3,5;0,1,0,3,1,0,1,1,1,2,0,7,1,8,3,8,6,1,6,5;0,6,2,8;8,1,4,5,4,5,8,1;0,0,95,0,2,98,0,8,94,2,5,13,2,6,39";
+
+        String solution = solve(grid11, "AS1", true);
+        //System.out.println(grid);
         //String solution = solve(grid2, "UC", true);
         //System.out.println("hostages saved: "+ hostSaved);
         //System.out.println(solution);

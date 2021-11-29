@@ -742,9 +742,8 @@ public class Matrix {
     public static int H1(ArrayList<Agent> turnedAgents, ArrayList<Hostage> hostages,Neo neo, Tuple tb){
         int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty())?0:1;
         //System.out.println(turnedAgents.size()+ hostages.size() + neo.currentlyCarrying+n);
-        int j = (neo.currentlyCarrying==0)?0:1; // if he's currently carrying he must perform a drop
-        return turnedAgents.size()/4 + hostages.size() + j + n;
-        //return turnedAgents.size() + n;
+        //return turnedAgents.size()/4 + hostages.size()  + n;
+        return turnedAgents.size()/4 + n;
     }
     public static int H2( ArrayList<Agent> turnedAgents,ArrayList<Hostage> hostages ,Neo neo, Tuple tb){
         int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty())?0:1;
@@ -925,12 +924,10 @@ public class Matrix {
         String grid11 = "9,9;2;8,0;3,5;0,1,0,3,1,0,1,1,1,2,0,7,1,8,3,8,6,1,6,5;0,6,2,8;8,1,4,5,4,5,8,1;0,0,95,0,2,98,0,8,94,2,5,13,2,6,39";
 
         String solution = solve(grid11, "AS1", true);
-        //System.out.println(grid);
-        //String solution = solve(grid2, "UC", true);
-        //System.out.println("hostages saved: "+ hostSaved);
-        //System.out.println(solution);
-    }
 
+    }
+    //up, up, up, up, up, up, right, kill, up, kill, up, kill, down, right, right, right, up, right, right, kill, takePill, right, kill, left, down, down, carry, left, carry, down, drop; 3; 8; 949770
+    //up, up, up, up, up, up, right, kill, up, kill, up, kill, down, right, right, right, up, right, right, kill, takePill, right, kill, left, down, down, carry, left, carry, down, drop; 3; 8; 949770
 }
 
 

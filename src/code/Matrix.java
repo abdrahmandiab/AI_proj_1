@@ -2,10 +2,11 @@ package code;
 
 import java.util.*;
 
+import static java.lang.Math.ceil;
+
 //TODO add penalty on hostage death.
 public class Matrix {
     public static int nodesExpanded = 0;
-        @SuppressWarnings("rawtypes")
         public static String genGrid()
         {
             //Randomize generated objects numbers
@@ -31,13 +32,13 @@ public class Matrix {
             //Start generating locations of objects
 
             //Neo
-            Tuple<Integer, Integer> neo = new Tuple<Integer, Integer>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+            Tuple neo = new Tuple(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
             Locations.add(neo);
             //Telephone Booth
-            Tuple<Integer, Integer> tel = new Tuple<Integer, Integer>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+            Tuple tel = new Tuple(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
             //Ensure TB is not at the same location as Neo el fager
             while(Locations.contains(tel))
-                tel = new Tuple<Integer, Integer>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+                tel = new Tuple(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
             Locations.add(tel);
 
             //Carry capacity of Neo
@@ -53,9 +54,9 @@ public class Matrix {
             // Generate Agents and their locations
             Tuple[] agentLocation = new Tuple[agentNumber];
             for (int i = 0; i < agentNumber; i++) {
-                Tuple<Integer, Integer> agent = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                Tuple agent = new Tuple(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
                 while (Locations.contains(agent))
-                    agent = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                    agent = new Tuple(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
                 Locations.add(agent);
                 agentLocation[i] = agent;
                 out += agent.x + "," + agent.y + ",";
@@ -67,9 +68,9 @@ public class Matrix {
             // Generate pills and their locations
             Tuple[] pillLocation = new Tuple[pillNumber];
             for (int i = 0; i < pillNumber; i++) {
-                Tuple<Integer, Integer> pill = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                Tuple pill = new Tuple(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
                 while (Locations.contains(pill))
-                    pill = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                    pill = new Tuple(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
                 Locations.add(pill);
                 pillLocation[i] = pill;
                 out += pill.x + "," + pill.y + ",";
@@ -82,12 +83,12 @@ public class Matrix {
             Tuple[] pad2Location = new Tuple [padNumber];
             for (int i = 0; i<padNumber;i++)
             {
-                Tuple<Integer, Integer> pad = new Tuple<>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
-                Tuple<Integer, Integer> pad2 = new Tuple<>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+                Tuple pad = new Tuple(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+                Tuple pad2 = new Tuple(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
                 while(Locations.contains(pad))
-                    pad = new Tuple<>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+                    pad = new Tuple(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
                 while(Locations.contains(pad))
-                    pad2 = new Tuple<>(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
+                    pad2 = new Tuple(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
                 Locations.add(pad);
                 Locations.add(pad2);
                 padLocation[i]=pad;
@@ -102,10 +103,10 @@ public class Matrix {
             int[] hostageStartDmg = new int[hostageNumber];
             Tuple[] hostageLocation = new Tuple[hostageNumber];
             for (int i = 0; i < hostageNumber; i++) {
-                Tuple<Integer, Integer> hostage = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                Tuple hostage = new Tuple(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
                 hostageStartDmg[i] = rng.nextInt(98) + 1;
                 while (Locations.contains(hostage))
-                    hostage = new Tuple<>(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
+                    hostage = new Tuple(rng.nextInt(gridWidth), rng.nextInt(gridHeight));
                 Locations.add(hostage);
                 hostageLocation[i] = hostage;
                 out += hostage.x + "," + hostage.y + "," + hostageStartDmg[i] + ",";
@@ -743,7 +744,7 @@ public class Matrix {
         int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty())?0:1;
         //System.out.println(turnedAgents.size()+ hostages.size() + neo.currentlyCarrying+n);
         //return turnedAgents.size()/4 + hostages.size()  + n;
-        return turnedAgents.size()/4 + n;
+        return (int) (ceil((turnedAgents.size()) / 4 + ((turnedAgents.size() % 4 == 0) ? 0 : 1))+ hostages.size()+ n);
     }
     public static int H2( ArrayList<Agent> turnedAgents,ArrayList<Hostage> hostages ,Neo neo, Tuple tb){
         int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty())?0:1;
@@ -923,7 +924,7 @@ public class Matrix {
         String grid2 = "6,6;2;2,4;2,2;0,4,1,4,3,0,4,2;0,1,1,3;4,4,3,1,3,1,4,4;0,0,92,1,2,38";
         String grid11 = "9,9;2;8,0;3,5;0,1,0,3,1,0,1,1,1,2,0,7,1,8,3,8,6,1,6,5;0,6,2,8;8,1,4,5,4,5,8,1;0,0,95,0,2,98,0,8,94,2,5,13,2,6,39";
 
-        String solution = solve(grid11, "AS1", true);
+        String solution = solve(grid2, "AS2", true);
 
     }
     //up, up, up, up, up, up, right, kill, up, kill, up, kill, down, right, right, right, up, right, right, kill, takePill, right, kill, left, down, down, carry, left, carry, down, drop; 3; 8; 949770

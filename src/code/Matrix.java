@@ -701,13 +701,13 @@ public class Matrix {
     }
     //Heuristics.
     public static int H1(ArrayList<Agent> turnedAgents, ArrayList<Hostage> hostages,Neo neo, Tuple tb){
-        int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty())?0:1;
+        int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty() && neo.currentlyCarrying ==0)?0:1;
         //System.out.println(turnedAgents.size()+ hostages.size() + neo.currentlyCarrying+n);
         //return turnedAgents.size()/4 + hostages.size()  + n;
         return (int) (ceil((turnedAgents.size()) / 4 + ((turnedAgents.size() % 4 == 0) ? 0 : 1))+ hostages.size()+ n);
     }
     public static int H2( ArrayList<Agent> turnedAgents,ArrayList<Hostage> hostages ,Neo neo, Tuple tb){
-        int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty())?0:1;
+        int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty() && neo.currentlyCarrying==0)?0:1;
         return hostages.size() + n;
     }
     //Actions

@@ -4,7 +4,6 @@ import java.util.*;
 
 import static java.lang.Math.ceil;
 
-//TODO add penalty on hostage death.
 public class Matrix {
     public static int nodesExpanded = 0;
         public static String genGrid()
@@ -36,7 +35,7 @@ public class Matrix {
             Locations.add(neo);
             //Telephone Booth
             Tuple tel = new Tuple(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
-            //Ensure TB is not at the same location as Neo el fager
+            //Ensure TB is not at the same location as Neo
             while(Locations.contains(tel))
                 tel = new Tuple(rng.nextInt(gridWidth),rng.nextInt(gridHeight));
             Locations.add(tel);
@@ -117,25 +116,7 @@ public class Matrix {
             return out;
 
         }
-//        return "5,5;" +                         // 0 M,N
-//                "2;" +                          // 1 C
-//                "0,4;" +                        // 2 code.Neo x,y
-//                "1,4;" +                        // 3 TB x,y
-//                "0,1,1,1,2,1,3,1,3,3,3,4;" +    // 4 Agents (x,y) pairs
-//                "1,0,2,4;" +                    // 5 pill1.x,pill1.y
-//                "0,3,4,3,4,3,0,3;" +            // 6 pad1.x,pad1.y,pad2.x,pad2.y
-//                "2,0,78";         // 7 Hostage.x,Hostage.y,Hostage.damage ...
-//
-////        //EASY MODE
-////        return "5,5;" +                         // 0 M,N
-////                "2;" +                          // 1 C
-////                "0,4;" +                        // 2 code.Neo x,y
-////                "1,4;" +                        // 3 TB x,y
-////                "1,3;" +    // 4 Agents (x,y) pairs
-////                "1,0,2,4;" +                    // 5 pill1.x,pill1.y
-////                "0,3,4,3;" +            // 6 pad1.x,pad1.y,pad2.x,pad2.y
-////                "0,3,30";         // 7 code.Hostage.x,code.Hostage.y,code.Hostage.damage ...
-//    }
+
 
 
     public static String solve(String grid, String strat, boolean viz){
@@ -150,10 +131,9 @@ public class Matrix {
         PriorityQueue<Node> UCActionQueue = new PriorityQueue<Node>(100000,UCcomparator);
         PriorityQueue<Node> AStarActionQueue = new PriorityQueue<Node>(100000,AScomparator);
         PriorityQueue<Node> GreedyActionQueue = new PriorityQueue<Node>(100000,GRcomparator);
-        // ^^
+
         boolean isSolved = false;
         String [] arr = grid.split(";");
-        //Get m & n
         String [] mn = arr[0].split(",");
         int m = Integer.parseInt(mn[0]);
         int n = Integer.parseInt(mn[1]);
@@ -183,24 +163,8 @@ public class Matrix {
         String states = "";
         int looper = 0;
         while(!isSolved && !(actionQueue.isEmpty()) && !(UCActionQueue.isEmpty()) && !(GreedyActionQueue.isEmpty()) && !(AStarActionQueue.isEmpty())) {
-
-            //FIXME USE THIS LOOP FOR DEBUGGING (delete when done)
-
-//        // Loop while it is not solved, and the queue is not empty.
-//
-        //while(looper<100){
             looper++;
-//            System.out.println("======== ITERATION "+looper+"========");
-//            System.out.println();
-//
-//            for(code.Node n1 : actionQueue){ System.out.println(n1);System.out.println();}
-//
-//            for(code.Node n1 : actionQueue){ states += " "+n1.thisMove;}
-//            System.out.println("states in queue: " + states);
-            // states = "";
-
-
-            //We have a Queue.
+//            We have a Queue.
 //            from it:
 //            - When a node is dequeued from it, we must perform a goalTest on it first.
 //              --> If the goal test is passed, then isSolved becomes true and we are done solving.
@@ -231,12 +195,8 @@ public class Matrix {
             }
             if (!inTable) {
                 nodesExpanded += 1;
-//                if (nodesExpanded % 1000 == 0) {
-//                    System.out.println("expanded node #" + nodesExpanded +" actionQueue: "+ actionQueue.size() + " hashTableSize: "+ NodesTable.size());
-//                }
                 isSolved = goalTest(popped.hostages, popped.turnedAgents, popped.neo,popped.TB);
-                //System.out.println("Solved: " + isSolved + popped.hostages + popped.turnedAgents + popped.neo.hostagesCarried + ", action: " + popped.thisMove + ", neo-location: " + popped.neo.location + " TB: (" + TB.x + "," + TB.y + ")");
-                if (isSolved) {
+                 if (isSolved) {
                     String solution = makeStringOfMoves(popped);
                     if(viz){
                     ArrayList<Node> nodes =  getNodes(popped);
@@ -461,7 +421,6 @@ public class Matrix {
                         possibleStates.remove(p);
                     }
                 }
-                //TODO (Enqueue generated states in order based on start chosen)
                 switch (strat) {
                     case "BF":
                         for (Node state : possibleStates) {
@@ -740,7 +699,7 @@ public class Matrix {
         }
         return numDeaths;
     }
-
+    //Heuristics.
     public static int H1(ArrayList<Agent> turnedAgents, ArrayList<Hostage> hostages,Neo neo, Tuple tb){
         int n = (checkTB(neo,tb) && hostages.isEmpty() && turnedAgents.isEmpty())?0:1;
         //System.out.println(turnedAgents.size()+ hostages.size() + neo.currentlyCarrying+n);
@@ -829,6 +788,7 @@ public class Matrix {
         }
     }
 
+    //Printing and stringifying
     public static String makeStringOfMoves(Node n){
         Node currentNode = n;
         String result = "";
@@ -928,9 +888,7 @@ public class Matrix {
         String solution = solve(grid0, "AS1", true);
 
     }
-    //up, up, up, up, up, up, right, kill, up, kill, up, kill, down, right, right, right, up, right, right, kill, takePill, right, kill, left, down, down, carry, left, carry, down, drop; 3; 8; 949770
-    //up, up, up, up, up, up, right, kill, up, kill, up, kill, down, right, right, right, up, right, right, kill, takePill, right, kill, left, down, down, carry, left, carry, down, drop; 3; 8; 949770
-}
+   }
 
 
 

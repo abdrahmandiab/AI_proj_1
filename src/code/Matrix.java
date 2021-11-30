@@ -139,6 +139,7 @@ public class Matrix {
 
 
     public static String solve(String grid, String strat, boolean viz){
+        nodesExpanded= 0;
         HashSet <String> NodesTable= new HashSet<String>();
         boolean inTable = false;
         Deque<Node> actionQueue = new ArrayDeque<Node>(); //Double ended queue
@@ -921,10 +922,10 @@ public class Matrix {
 
     public static void main(String args[]){
         String grid = genGrid();
-        String grid2 = "6,6;2;2,4;2,2;0,4,1,4,3,0,4,2;0,1,1,3;4,4,3,1,3,1,4,4;0,0,92,1,2,38";
+        String grid0 = "5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62";
         String grid11 = "9,9;2;8,0;3,5;0,1,0,3,1,0,1,1,1,2,0,7,1,8,3,8,6,1,6,5;0,6,2,8;8,1,4,5,4,5,8,1;0,0,95,0,2,98,0,8,94,2,5,13,2,6,39";
 
-        String solution = solve(grid2, "AS2", true);
+        String solution = solve(grid0, "AS1", true);
 
     }
     //up, up, up, up, up, up, right, kill, up, kill, up, kill, down, right, right, right, up, right, right, kill, takePill, right, kill, left, down, down, carry, left, carry, down, drop; 3; 8; 949770

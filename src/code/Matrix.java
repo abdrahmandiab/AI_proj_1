@@ -388,6 +388,8 @@ public class Matrix {
                         Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                         ArrayList<Agent> turnedAgentsPoppedCopy = (ArrayList<Agent>) turnedAgentsPopped.clone();
                         ArrayList<Agent> spawnedAgentsPoppedCopy = (ArrayList<Agent>) spawnedAgentsPopped.clone();
+                        int goodKills = turnedAgentsAround.size() *goodKillCost;
+                        int badKills = spawnedAgentsAround.size() *badKillCost;
                         Kill(neoM, allAgentsAround, turnedAgentsPoppedCopy, spawnedAgentsPoppedCopy);
                         int heuristicValue = 0;
                         if(strat =="GR1" || strat =="AS1"){
@@ -396,13 +398,15 @@ public class Matrix {
                         else if (strat =="GR2" || strat =="AS2"){
                             heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
                         }
-                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPoppedCopy, turnedAgentsPoppedCopy, hostagesPopped, pads, pillsPopped, "kill", popped, popped.numKills + allAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ goodKillCost, popped.nodeLevel+1);
+                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPoppedCopy, turnedAgentsPoppedCopy, hostagesPopped, pads, pillsPopped, "kill", popped, popped.numKills + allAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ goodKills+badKills, popped.nodeLevel+1);
                         possibleStates.add(KillNode);
                     }
                     if (spawnedAgentsAround.size() != 0 && turnedAgentsAround.size() == 0  && (hostageWithNeoInCell==null || hostageWithNeoInCell.hp>2)) { // (b)
                         Neo neoM = new Neo(neoPopped.maxCarry , neoPopped.hp, new Tuple((int) neoPopped.location.x, (int) neoPopped.location.y), neoPopped.hostagesCarried, neoPopped.currentlyCarrying);
                         ArrayList<Agent> turnedAgentsPoppedCopy = (ArrayList<Agent>) turnedAgentsPopped.clone();
                         ArrayList<Agent> spawnedAgentsPoppedCopy = (ArrayList<Agent>) spawnedAgentsPopped.clone();
+                        int goodKills = turnedAgentsAround.size() *goodKillCost;
+                        int badKills = spawnedAgentsAround.size() *badKillCost;
                         Kill(neoM, spawnedAgentsAround,  turnedAgentsPoppedCopy, spawnedAgentsPoppedCopy);
                         int heuristicValue = 0;
                         if(strat =="GR1" || strat =="AS1"){
@@ -411,7 +415,7 @@ public class Matrix {
                         else if (strat =="GR2" || strat =="AS2"){
                             heuristicValue = H2(turnedAgentsPopped,hostagesPopped,neoM,TB);
                         }
-                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPoppedCopy, turnedAgentsPoppedCopy, hostagesPopped, pads, pillsPopped, "kill" , popped, popped.numKills + spawnedAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ badKillCost, popped.nodeLevel+1);
+                        Node KillNode = new Node(neoM, m, n, TB, spawnedAgentsPoppedCopy, turnedAgentsPoppedCopy, hostagesPopped, pads, pillsPopped, "kill" , popped, popped.numKills + spawnedAgentsAround.size(), popped.numDeaths + numDeathsThisTurn, heuristicValue, popped.costSoFar+ numDeathsThisTurn*15000+ badKills, popped.nodeLevel+1);
                         possibleStates.add(KillNode);
                     }
                 }

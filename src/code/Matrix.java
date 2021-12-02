@@ -6,6 +6,7 @@ import static java.lang.Math.ceil;
 
 public class Matrix {
     public static int nodesExpanded = 0;
+    public static Deque<Node> idQueue = new ArrayDeque<Node>();
         public static String genGrid()
         {
             //Randomize generated objects numbers
@@ -131,6 +132,8 @@ public class Matrix {
         PriorityQueue<Node> UCActionQueue = new PriorityQueue<Node>(100000,UCcomparator);
         PriorityQueue<Node> AStarActionQueue = new PriorityQueue<Node>(100000,AScomparator);
         PriorityQueue<Node> GreedyActionQueue = new PriorityQueue<Node>(100000,GRcomparator);
+
+        int currentlevel = 1;
 
         boolean isSolved = false;
         String [] arr = grid.split(";");
@@ -439,19 +442,22 @@ public class Matrix {
                         ;
                         break;
                     case "ID":
-                        int currentLevel = 1;
-                        int lastLevel;
-                        if(possibleStates.isEmpty())
-                            lastLevel = 0;
-                        else
-                            lastLevel = possibleStates.get(possibleStates.size()-1).getNodeLevel();
-                        for(int i = 0; i < lastLevel; i++) {
-                            for (Node state : possibleStates) {
-                                if (state.getNodeLevel() > currentLevel)
-                                    break;
-                                actionQueue.addLast(state);
+                        boolean flatlevels = false;
+                        Collections.reverse(possibleStates);
+                        for(Node state : possibleStates) {
+                            if(state.getNodeLevel()>currentlevel) {
+                                continue;
                             }
-                            currentLevel++;
+                            actionQueue.addFirst(state);
+                            flatlevels = true;
+                        }
+                        if(possibleStates.isEmpty())
+                            flatlevels = true;
+                        if(!flatlevels){
+                            actionQueue = new ArrayDeque<Node>();
+                            actionQueue.addFirst(initState);
+                            currentlevel++;
+                            NodesTable = new HashSet<String>();
                         }
                         break;
                     case "UC":
@@ -889,7 +895,7 @@ public class Matrix {
         String grid0 = "5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62";
         String grid11 = "9,9;2;8,0;3,5;0,1,0,3,1,0,1,1,1,2,0,7,1,8,3,8,6,1,6,5;0,6,2,8;8,1,4,5,4,5,8,1;0,0,95,0,2,98,0,8,94,2,5,13,2,6,39";
 
-        String solution = solve(grid0, "AS1", true);
+        String solution = solve(grid0, "AS2", false);
 
     }
    }
